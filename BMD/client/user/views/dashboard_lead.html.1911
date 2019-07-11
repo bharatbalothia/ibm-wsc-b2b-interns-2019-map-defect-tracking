@@ -1,0 +1,2726 @@
+<div id="alert">
+  <div modal="alertModal" class="modal-height1" close="closeAlert()">
+    <div class="modal-header">
+        <h4>Alert!</h4>
+    </div>
+    <div class="modal-body">
+      {{alertMessage}}
+    </div>
+    <div class="modal-footer">
+      <button class="btn" ng-click="closeAlert()">Close</button>
+    </div>
+  </div>
+</div>
+
+
+
+<div>
+<style>
+.tooltip {
+  position: relative;
+  display: inline-block;
+  border-bottom: 1px dotted black;
+}
+
+.tooltip .tooltiptext {
+  visibility: hidden;
+  width: 120px;
+  background-color: black;
+  color: #fff;
+  text-align: center;
+  border-radius: 6px;
+  padding: 5px 0;
+  position: absolute;
+  z-index: 1;
+  top: 150%;
+  left: 50%;
+  margin-left: -60px;
+}
+
+.tooltip .tooltiptext::after {
+  content: "";
+  position: absolute;
+  bottom: 100%;
+  left: 50%;
+  margin-left: -5px;
+  border-width: 5px;
+  border-style: solid;
+  border-color: transparent transparent black transparent;
+}
+
+.tooltip:hover .tooltiptext {
+  visibility: visible;
+}
+</style>
+<style>
+table {
+  display:block;
+  overflow-x: scroll;
+
+}
+.badge-notify{
+  background:red;
+  position:relative;
+  top: -15px;
+  left: -35px;
+  align:right;
+}
+#nav {
+  width:900px;
+  margin:0 auto;
+  list-style:none;
+  align:middle;
+
+}
+#nav1 {
+  width:450px;
+  margin:0 auto;
+  list-style:none;
+  align:middle;
+
+}
+#nav2 {
+  margin:0 auto;
+  list-style:none;
+  align:middle;
+
+}
+</style>
+
+<div class="well" style="background-color:#122649;height:70px">
+          <button class="btn btn-default btn-sm" type="submit" ng-click="logout()" style="float:right;"><b> Logout</b></button>
+            <button class="btn btn-default btn-sm" ng-if="userlevel == 'admin'" ng-click="gotoadmin()"style="float:right;"><b>Admin</b></button>
+            <h6 style="float:right;"><font color="white"><b><span class="glyphicon glyphicon-user" ></span>  Welcome  {{loginname}}  &nbsp;&nbsp;</b></font></h6>
+      <div style="float:right;">
+         <span data-balloon-length="small" data-balloon="ClientBased:{{ticket_data.zero.length}}  Project:{{nonticket_data.zero.length}}  Others:{{other_data.zero.length}}" data-balloon-pos="down" class="btn btn-default btn-lg btn-link" style="font-size:22px;" ng-click="myvalue=false">
+        <span class="glyphicon glyphicon-bell" style="color:#26A6DA"></span>
+      </span>
+      <span ng-show="myvalue==false" class="badge badge-notify" style="display:none">0</span>
+      <span ng-hide="myvalue==false || ticket_data.zero.length + nonticket_data.zero.length + other_data.zero.length ==0" class="badge badge-notify">{{ticket_data.zero.length + nonticket_data.zero.length + other_data.zero.length}}</span>
+    </div>
+
+
+    <p style="float:left;">
+    <img src="/user/graphic/123.png"  style="width:100px;height:25px;float:top;">&nbsp;
+    <h4><b><font color="white"> BUSINESS METRICS DASHBOARD</font></b></h4>
+    </p>
+</div>
+
+
+  <!--
+<div class="well">
+  <p>
+    <p style="float:right;" class="text-info">
+    <span  ng-show="dropdown==true" >
+        <span><option disabled>Client Based: {{ticket_data.zero.length}}</option></span>
+        <span><option disabled>Project: {{nonticket_data.zero.length}}</option></span>
+        <span><option disabled>Others: {{other_data.zero.length}}</option></span>
+      </span>
+
+
+      <font><b>  Welcome  {{loginname}}</b></font><br>
+
+      <button class="btn btn-default btn-sm" type="submit" ng-click="logout()" style="float:right;"><b>Logout</b></button>
+
+    </p>
+    <img src="/user/graphic/ibm-logo.jpg"  style="width:200px;height:50px;float:left;">
+    <h3 id="nav1"><b>BUSINESS METRICS DASHBOARD</b></h3>
+
+    </p>
+  <br>
+  </div> -->
+  <nav id="nav">
+    <div class="container-fluid">
+
+      <div class="collapse navbar-collapse" id="myNavbar">
+        <ul class="nav navbar-nav">
+
+
+          <div class="dropdown">
+            <button class="dropbtn" style="width:150px"><b> DASHBOARD</b></button>
+            <div class="dropdown-content">
+              <a href="javascript:void(0)" onclick="openCity('dashboardticket')"><b>CLIENT-REQUEST</b></a>
+              <a href="javascript:void(0)" onclick="openCity('dashboardnonticket')"><b>PROJECT</b></a>
+              <a href="javascript:void(0)" onclick="openCity('dashboardother')"><b>OTHER</b></a>
+              <a href="javascript:void(0)" onclick="openCity('dashboardescalation')"><b>ESCALATION</b></a>
+
+            </div>
+        </div>
+          <div class="dropdown">
+            <button class="dropbtn" style="width:150px"><b> APPRECIATION </b></button>
+            <div class="dropdown-content">
+              <a href="javascript:void(0)" onclick="openCity('INPUT')"><b>CLIENT-REQUEST</b></a>
+              <a href="javascript:void(0)" onclick="openCity('ntc')"><b>PROJECT</b></a>
+              <a href="javascript:void(0)" onclick="openCity('others')"><b>OTHER</b></a>
+            </div>
+          </div>
+          <button class="dropbtn" onclick="openCity('eb')" style="width:150px"><b>ESCALATION</b></button>
+
+          <div class="dropdown" >
+            <button class="dropbtn" style="width:150px"><b> APPROVALS </b></button>
+            <div class="dropdown-content">
+              <a href="javascript:void(0)" onclick="openCity('approvalticket')"><b>CLIENT-REQUEST</b></a>
+              <a href="javascript:void(0)" onclick="openCity('approvalnonticket')"><b>PROJECT</b></a>
+              <a href="javascript:void(0)" onclick="openCity('approvalother')"><b>OTHER</b></a>
+            </div>
+            </div>
+
+
+
+          <div class="dropdown">
+            <button class="dropbtn" style="width:150px"><b> STATUS </b></button>
+            <div class="dropdown-content">
+          <a href="javascript:void(0)" onclick="openCity('statusticket')"><b>CLIENT-REQUEST</b></a>
+          <a href="javascript:void(0)" onclick="openCity('statusnonticket')"><b>PROJECT</b></a>
+          <a href="javascript:void(0)" onclick="openCity('statusother')"><b>OTHER</b></a>
+          <a href="javascript:void(0)" onclick="openCity('statusescalation')"><b>ESCALATION</b></a>
+          <a href="javascript:void(0)"  onclick="openCity('FT')"><b>FUNCTIONAL TEAMS</b></a>
+          <a href="javascript:void(0)"  onclick="openCity('statistics')"><b>STATISTICS</b></a>
+          </div>
+        </div>
+        </ul>
+        <ul class="nav navbar-nav navbar-right">
+          <!--<li><a href="#"><span class="glyphicon glyphicon-user"></span> Sign Up</a></li>
+          <li><a href="#"><span class="glyphicon glyphicon-log-out"></span> Login</a></li>-->
+        </ul>
+      </div>
+    </div>
+  </nav>
+<hr>
+
+
+<!-- manager view functional teams -->
+<div id="FT" class="w3-container city" style="display:none">
+<div >
+  <div class="well" >
+    <b><font color="grey">MY FUNCTIONAL TEAMS <ul ng-repeat="item in myteams" style="display:inline;align:center;" > {{item}} </ul> </font></b>
+  </div>
+<table style="overflow:visible" && ng-if="mydelegations.status == 'manager'">
+<tr style="background-color:grey">
+<th>DELEGATED USERS</th>
+<th>FUNCTIONAL TEAM</th>
+</tr>
+<tbody ng-repeat="item in mysubunits">
+<tr ng-repeat="each in item.assigned">
+<th>{{item._id}}</th>
+<th>{{each}}<br /></th>
+</tr>
+</tbody>
+
+
+</table>
+</div>
+</div>
+
+<!-- TABLE FOR STATISTICS -->
+<div id="statistics" class="w3-container city" style="display:none">
+  <b>STATISTICS</b>
+  <br>
+  <br>
+<table style="overflow:visible;">
+<tr>
+  <th style="color:white;background-color:#dddddd;"></th>
+  <th style="color:white;background-color:gray;">DASHBOARD</th>
+  <th style="color:white;background-color:gray;">APPROVALS</th>
+  <th style="color:white;background-color:gray;">STATUS</th>
+</tr>
+
+<tr>
+  <th style="color:white;background-color:gray">CLIENT-REQUEST</th>
+  <th>{{ticket_data.one.length + ticket_data.myappreciated.length}}</th>
+  <th>{{ticket_data.zero.length }}</th>
+  <th>{{ticket_data.mine.length}}</th>
+</tr>
+
+<tr>
+<th style="color:white;background-color:gray">PROJECT</th>
+<th>{{nonticket_data.one.length + nonticket_data.myappreciated.length}}</th>
+<th>{{nonticket_data.zero.length}}</th>
+<th>{{nonticket_data.mine.length}}</th>
+</tr>
+
+<tr>
+<th style="color:white;background-color:gray">OTHERS</th>
+<th>{{other_data.one.length + other_data.myappreciated.length}}</th>
+<th>{{other_data.zero.length}}</th>
+<th>{{other_data.mine.length}}</th>
+</tr>
+
+<tr>
+  <th style="color:white;background-color:gray">ESCALATION</th>
+  <th>{{escalation_data.feed.length + escalation_data.myappreciated.length}}</th>
+  <th>0</th>
+  <th>{{escalation_data.mine.length}}</th>
+</tr>
+</table>
+
+</div>
+
+
+<!--notifications -->
+
+
+  <div id="statusother" class="w3-container city" style="display:none">
+    <b>OTHERS</b><br><br>
+    <table class="table table-striped table-bordered"  at-paginated at-table at-list="other_data.mine" at-config="config">
+      <thead style="color:white;background-color:gray"></thead>
+      <tbody>
+      <tr>
+        <td at-sortable  at-title="Appreciated Username" at-implicit at-attribute="appreciated_username"></td>
+        <td at-sortable at-title="Other" at-implicit at-attribute="client"></td>
+        <td at-sortable at-title="Date of Appreciation" at-implicit at-attribute="date"></td>
+        <td at-title="Type">{{item.type}}</td>
+        <td at-title="Written Appreciation"><textarea rows="2" cols="25" style="resize:none" disabled>{{item.apprtxt}}</textarea></td>
+        <td at-sortable at-title="Appreciated By" at-implicit at-attribute="appreciatedby"></td>
+        <td at-title="Functional Team"> {{item.team}} </td>
+        <td at-title="Status">
+          <div>
+            <div ng-if="item.status==1">accepted</div>
+            <div ng-if="item.status==-1">rejected
+
+              <button ng-click="showotherModalEdit(item)">edit</button>
+              <!-- Modal begin here NONTicket edit -->
+                       <div modal="otherModalEdit" close="closeotherModalEdit()">
+                         <div class="modal-header">
+                             <h4>Edit</h4>
+                         </div>
+                         <div class="modal-body">
+                           <form class="w3-container w3-card-4" ng-submit="resubmit_other(modalitem, myFile); closeootherModalEdit()">
+                           <hr>
+
+                           <label>APPRECIATED USER:</label>
+                           <br>     <span><b>SELF:</b>&nbsp;<input type="radio" value="{{user}}" ng-model="modalitem.appreciated_user" name="modal_user_otherbased" /></span>
+                             <span><b>ENTER APPRECIATED USER:</b></span>
+                                   <input type="text" ng-model="modalitem.appreciated_user" required/>
+                           <hr>
+
+                           <label>OTHER:</label>
+                           <select name="option" onchange='CheckColors(this.value);' required ng-model="modalitem.client">
+                            <option value="" disabled selected>select</option>
+                            <option value="STAKEHOLDERS" >STAKEHOLDERS</option>
+                            <option value="CSM" >CSM</option>
+                            <option value="Sales">SALES</option>
+                            <option value="UR PROGRAMS">UR PROGRAMS</option>
+                            <option value="OTHERS">OTHERS</option>
+
+                          </select><hr>
+                          <div name="color" id="color" style='display:none;float:middle;'>
+                          <hr><b>Specify other:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                          </b><input type="text" ng-model="modalitem.client" placeholder="  patents etc"/>
+                          </div>
+
+                           <hr>
+                           <label>DATE OF APPRECIATION:</label>
+                           <select name="DOBDay" ng-model="testdate.day" required>
+                           <option value="" disabled selected> - Day - </option>
+                           <option value="01">01</option>
+                           <option value="02">02</option>
+                           <option value="03">03</option>
+                           <option value="04">04</option>
+                           <option value="05">05</option>
+                           <option value="06">06</option>
+                           <option value="07">07</option>
+                           <option value="08">08</option>
+                           <option value="09">09</option>
+                           <option value="10">10</option>
+                           <option value="11">11</option>
+                           <option value="12">12</option>
+                           <option value="13">13</option>
+                           <option value="14">14</option>
+                           <option value="15">15</option>
+                           <option value="16">16</option>
+                           <option value="17">17</option>
+                           <option value="18">18</option>
+                           <option value="19">19</option>
+                           <option value="20">20</option>
+                           <option value="21">21</option>
+                           <option value="22">22</option>
+                           <option value="23">23</option>
+                           <option value="24">24</option>
+                           <option value="25">25</option>
+                           <option value="26">26</option>
+                           <option value="27">27</option>
+                           <option value="28">28</option>
+                           <option value="29">29</option>
+                           <option value="30">30</option>
+                           <option value="31">31</option>
+                           </select>
+
+                           <select name="DOBMonth" ng-model="testdate.month" required>
+                           <option value="" disabled selected> - Month - </option>
+                           <option value="01">01</option>
+                           <option value="02">02</option>
+                           <option value="03">03</option>
+                           <option value="04">04</option>
+                           <option value="05">05</option>
+                           <option value="06">06</option>
+                           <option value="07">07</option>
+                           <option value="08">08</option>
+                           <option value="09">09</option>
+                           <option value="10">10</option>
+                           <option value="11">11</option>
+                           <option value="12">12</option>
+                           </select>
+
+
+                           <select name="DOBYear" ng-model="testdate.year" required>
+                           <option value="" disabled selected> - Year - </option>
+                           <option value="2020">2020</option>
+                           <option value="2019">2019</option>
+                           <option value="2018">2018</option>
+                           <option value="2017">2017</option>
+                           <option value="2016">2016</option>
+                           <option value="2015">2015</option>
+                           <option value="2014">2014</option>
+                           <option value="2013">2013</option>
+                           <option value="2012">2012</option>
+                           <option value="2011">2011</option>
+
+                           </select>
+                           <hr>
+                           <label>Functional Team:</label>
+                           <select name="team" ng-model="modalitem.team" required>
+                             <option value="" disabled selected>select</option>
+                             <option ng-repeat="t in functionalteams" value="{{t.name}}">{{t.name}}</option>
+                           </select>
+
+                           <hr>
+                           <label>APPRECIATION:</label>
+                               <label><input type="radio" value="internal" name="typo" required ng-model="modalitem.type" /> &nbsp;INTERNAL</label>
+                               <label><input type="radio" value="external" name="typo" required ng-model="modalitem.type"/> &nbsp;EXTERNAL</label>
+                           <hr>
+                           <label>APPRECIATED BY</label>
+                             <input type="text" ng-model="modalitem.appreciatedby" required/>
+                           <hr>
+                           <label>APPRECIATION TEXT:</label>
+                           <br>
+                           <textarea rows="4" cols="50" style="resize:none" required ng-model="modalitem.apprtxt" maxlength="1000">
+
+                           </textarea>
+
+                       <!--    <div>
+                           <input  class="w3-btn w3-teal" type="file" file-model="myFile" />
+                         </div> -->
+
+                           <hr>
+                           <button class="w3-btn w3-teal" type="submit">SUBMIT</button>
+                           <hr>
+
+                           </form>
+
+                         </div>
+                         <div class="modal-footer">
+                           <button class="btn" ng-click="closeotherModalEdit()">Close</button>
+                         </div>
+                       </div>
+
+
+
+            </div>
+            <div ng-if="item.status==0">pending</div>
+          </div>
+        </td>
+        <td at-title="Status message">
+          <div ng-switch="item.status">
+            <div ng-switch-when="1"><textarea rows="2" cols="25" style="resize:none" disabled>{{item.approval_reason}}</textarea></div>
+            <div ng-switch-when="-1"><textarea rows="2" cols="25"style="resize:none"  disabled>{{item.rejection_reason}}</textarea></div>
+          </div>
+        </td>
+        </tr>
+      </tbody>
+      </table>
+      <at-pagination at-list="other_data.mine" at-config="config"></at-pagination>
+             </div>
+
+
+<div id="statusescalation" class="w3-container city" style="display:none">
+<b>ESCALATION</b><br><br>
+<table class="table table-striped table-bordered"  at-paginated at-table at-list="escalation_data.mine" at-config="config">
+  <thead style="color:white;background-color:gray"></thead>
+  <tbody>
+
+  <tr>
+    <td at-sortable at-title="Username" at-implicit at-attribute="username"></td>
+    <td at-sortable at-title="Escalated Username" at-implicit at-attribute="appreciated_username"></td>
+    <td at-sortable at-title="Client" at-implicit at-attribute="client"></td>
+    <td at-title="Case No"><div ng-if="item.ticketno==''" || ng-if="!item.ticketno"><font><I>no ticket number</I></font></div>
+      <div ng-if="item.ticketno== null"><font><I>no ticket number</I></font></div>
+      <div ng-if="item.ticketno">{{item.ticketno}}</div>
+    </td>
+
+    <td at-sortable at-title="Date of Escalation Report" at-implicit at-attribute="date"></td>
+    <td at-title="Date Resolved"><div ng-switch="item.dateissue">
+      <div ng-switch-when="--"><I>no entry</I></div>
+      <div ng-switch-default> {{item.dateissue}}</div>
+    </div>
+  </td>
+  <td at-title="Severity">{{item.severity}}</td>
+  <td at-title="Escalation Raised by">{{item.raisedby}}</td>
+  <td at-title="IBM Issue">{{item.ibmissue}}</td>
+  <td at-title="Type">{{item.type}}</td>
+  <td at-title="Functional Team">{{item.team}}</td>
+  <td at-title="Description"><textarea rows="2" cols="25" style="resize:none" disabled>{{item.apprtxt}}</textarea></td>
+  <td at-title="Action Taken">
+    <div ng-if="item.actiontaken"><textarea rows="2" cols="25" style="resize:none" disabled>{{item.actiontaken}}</textarea></div>
+    <div ng-if="!item.actiontaken"><I>NO ACTION TAKEN</I></div>
+  </td>
+  <td at-title="Action">
+
+                <button ng-click="showescalationModalEdit(item)">edit</button>
+                <!-- Modal begin here NONTicket edit -->
+                         <div modal="escalationModalEdit" close="closeescalationModalEdit()">
+                           <div class="modal-header">
+                               <h4>Edit</h4>
+                           </div>
+                           <div class="modal-body">
+
+                <form  class="w3-container w3-card" ng-submit="resubmit_escalation(modalitem, myFile); closeescalationModalEdit()">
+                  <br>
+                  <label>User Associated with Escalation</label>
+                  <input type="text" placeholder="  IBM Intranet Email ID" ng-model="modalitem.appreciated_user" required/>
+                  <hr>
+                  <label>Client</label>&nbsp;&nbsp;
+                  <select name="option" ng-model="modalitem.client" required>
+                    <option value="" disabled selected>select</option>
+                    <option ng-repeat="item in clientList" value="{{item}}">{{item}}</option>
+                  </select>
+                  <br><hr>
+                  <label>Ticket Number</label>
+                  <input list="browser2" style="width:150px" name="option"  ng-model="modalitem.ticketno" >
+                  <hr>
+                    <datalist id="browser2">
+                      <option ng-repeat="item in escticketList" value="{{item.ticketno}}">{{modalitem.ticketno}}</option>
+                    </datalist>
+                  </select>
+
+                    <label><b>Ticket Category</b></label>{{modalitem.ticketCategory}}
+
+                  <hr>
+                  <label>Severity</label>&nbsp;&nbsp;
+                  <select name="option" ng-model="modalitem.severity">
+                  <option value="" disabled selected>select</option>
+                  <option value="1">1</option>
+                  <option value="2">2</option>
+                  <option value="3">3</option>
+                  <option value="4">4</option>
+                  </select>
+                  <hr>
+
+
+                  <label>Date of Escalation Reported</label>
+
+                  <select name="DOBDay" ng-model="testdate.day" required>
+                    <option value="" disabled selected> - Day - </option>
+                    <option value="01">01</option>
+                    <option value="02">02</option>
+                    <option value="03">03</option>
+                    <option value="04">04</option>
+                    <option value="05">05</option>
+                    <option value="06">06</option>
+                    <option value="07">07</option>
+                    <option value="08">08</option>
+                    <option value="09">09</option>
+                    <option value="10">10</option>
+                    <option value="11">11</option>
+                    <option value="12">12</option>
+                    <option value="13">13</option>
+                    <option value="14">14</option>
+                    <option value="15">15</option>
+                    <option value="16">16</option>
+                    <option value="17">17</option>
+                    <option value="18">18</option>
+                    <option value="19">19</option>
+                    <option value="20">20</option>
+                    <option value="21">21</option>
+                    <option value="22">22</option>
+                    <option value="23">23</option>
+                    <option value="24">24</option>
+                    <option value="25">25</option>
+                    <option value="26">26</option>
+                    <option value="27">27</option>
+                    <option value="28">28</option>
+                    <option value="29">29</option>
+                    <option value="30">30</option>
+                    <option value="31">31</option>
+                  </select>
+
+                  <select name="DOBMonth" ng-model="testdate.month" required>
+                    <option value="" disabled selected> - Month - </option>
+                    <option value="01">01</option>
+                    <option value="02">02</option>
+                    <option value="03">03</option>
+                    <option value="04">04</option>
+                    <option value="05">05</option>
+                    <option value="06">06</option>
+                    <option value="07">07</option>
+                    <option value="08">08</option>
+                    <option value="09">09</option>
+                    <option value="10">10</option>
+                    <option value="11">11</option>
+                    <option value="12">12</option>
+                  </select>
+
+
+                  <select name="DOBYear" ng-model="testdate.year" required>
+                    <option value="" disabled selected> - Year - </option>
+                    <option value="2020">2020</option>
+                    <option value="2019">2019</option>
+                    <option value="2018">2018</option>
+                    <option value="2017">2017</option>
+                    <option value="2016">2016</option>
+                    <option value="2015">2015</option>
+                    <option value="2014">2014</option>
+                    <option value="2013">2013</option>
+                    <option value="2012">2012</option>
+                    <option value="2011">2011</option>
+
+                  </select>
+                  <hr>
+                  <label>Date Resolved</label>
+
+                  <select name="DOBDay" ng-model="testdate.day_res" >
+                    <option value="" disabled selected> - Day - </option>
+                    <option value="01">01</option>
+                    <option value="02">02</option>
+                    <option value="03">03</option>
+                    <option value="04">04</option>
+                    <option value="05">05</option>
+                    <option value="06">06</option>
+                    <option value="07">07</option>
+                    <option value="08">08</option>
+                    <option value="09">09</option>
+                    <option value="10">10</option>
+                    <option value="11">11</option>
+                    <option value="12">12</option>
+                    <option value="13">13</option>
+                    <option value="14">14</option>
+                    <option value="15">15</option>
+                    <option value="16">16</option>
+                    <option value="17">17</option>
+                    <option value="18">18</option>
+                    <option value="19">19</option>
+                    <option value="20">20</option>
+                    <option value="21">21</option>
+                    <option value="22">22</option>
+                    <option value="23">23</option>
+                    <option value="24">24</option>
+                    <option value="25">25</option>
+                    <option value="26">26</option>
+                    <option value="27">27</option>
+                    <option value="28">28</option>
+                    <option value="29">29</option>
+                    <option value="30">30</option>
+                    <option value="31">31</option>
+                  </select>
+
+                  <select name="DOBMonth" ng-model="testdate.month_res" >
+                    <option value=""  disabled selected> - Month - </option>
+                    <option value="01">01</option>
+                    <option value="02">02</option>
+                    <option value="03">03</option>
+                    <option value="04">04</option>
+                    <option value="05">05</option>
+                    <option value="06">06</option>
+                    <option value="07">07</option>
+                    <option value="08">08</option>
+                    <option value="09">09</option>
+                    <option value="10">10</option>
+                    <option value="11">11</option>
+                    <option value="12">12</option>
+                  </select>
+
+
+                  <select name="DOBYear" ng-model="testdate.year_res" >
+                    <option value="" disabled  selected> - Year - </option>
+                    <option value="2020">2020</option>
+                    <option value="2019">2019</option>
+                    <option value="2018">2018</option>
+                    <option value="2017">2017</option>
+                    <option value="2016">2016</option>
+                    <option value="2015">2015</option>
+                    <option value="2014">2014</option>
+                    <option value="2013">2013</option>
+                    <option value="2012">2012</option>
+                    <option value="2011">2011</option>
+                  </select>
+                  <hr>
+
+                  <label>Escalation Raised By </label><input type="text"  placeholder="  Name" ng-model="modalitem.raisedby" maxlength="100" required />
+                <hr>
+                  <label>IBM Issue</label><input type="radio" value="yes" name="typo" ng-model="modalitem.ibmissue" required /> &nbsp;Yes
+                  &nbsp;<input type="radio" value="no" name="typo" ng-model="modalitem.ibmissue" required /> &nbsp;No
+                  <hr>
+
+                  <label>Escalation Type</label>
+                  <select name="Escalation Type" ng-model="modalitem.type" required>
+                    <option value="" disabled selected>select</option>
+                    <option value="Technical">Technical</option>
+                    <option value="Process">Process</option>
+                    <option value="Non-Compliance">Non-Compliance</option>
+
+                  </select>
+                  <hr>
+                  <label>Functional Team</label>
+                  <select name="team" ng-model="modalitem.team" required>
+                    <option value="" disabled selected>select</option>
+                    <option ng-repeat="t in functionalteams" value="{{t.name}}">{{t.name}}</option>
+                  </select>
+                  <hr>
+                  <label>Escalation Text</label>
+
+                  <br>
+                  <textarea rows="3" cols="50" placeholder="Maximum of 1000 words" ng-model="modalitem.apprtxt" style="resize:none" maxlength="1000" required>
+                  </textarea>
+
+                  <hr>
+                  <label>Action Taken</label>
+                  <br>
+
+                  <textarea rows="3" cols="50" placeholder="Maximum of 1000 words" ng-model="modalitem.actiontaken" style="resize:none;" maxlength="1000" required>
+                  </textarea>
+
+                  <hr>
+
+                  <button class="w3-btn w3-teal" type="submit">Submit</button>
+                <br><br>
+                </form>
+                </div>
+
+
+
+                <div class="modal-footer">
+                  <button class="btn" ng-click="closeescalationModalEdit()">Close</button>
+                </div>
+                </div>
+
+  </td>
+  </tr>
+</tbody>
+</table>
+<at-pagination at-list="escalation_data.mine" at-config="config"></at-pagination>
+
+</div>
+
+
+<!-- ticket based notification -->
+  <div id="statusticket" class="w3-container city" style="display:none">
+    <b>CLIENT-REQUEST</b>
+    <br><br>
+
+    <table class="table table-striped table-bordered"  at-paginated at-table at-list="ticket_data.mine" at-config="config">
+      <thead style="color:white;background-color:gray"></thead>
+      <tbody>
+      <tr>
+        <td at-sortable  at-title="Appreciated Username" at-implicit at-attribute="appreciated_username"></td>
+        <td at-sortable at-title="Client" at-implicit at-attribute="client"></td>
+        <td at-title="Case No">{{item.ticketno}}</td>
+        <td at-sortable at-title="Date of Appreciation" at-implicit at-attribute="date"></td>
+        <td at-title="Severity">{{item.severity}}</td>
+        <td at-title="Appreciation Reason">
+          <div>
+            <div ng-if="item.state.quickres == true">quick solution;  </div>
+            <div ng-if="item.state.complexsol == true">complex solution;</div>
+            <div ng-if="item.state.other == true">other</div>
+          </div>
+        </td>
+        <td at-title="Appreciation">{{item.type}}</td><!-- this is for appreciation -->
+        <td at-title="Appreciation Comments">
+          <div ng-switch="item.type">
+            <div ng-switch-when="internal"><textarea rows="2" cols="25" style="resize:none" disabled>{{item.apprtxt}}</textarea></div>
+            <div ng-switch-when="external">
+              <div ng-switch="item.ratingtype">
+                <div ng-switch-when="starrate">Star Rating ({{item.stars}} stars)</div>
+                <div ng-switch-when="appr"><textarea rows="2" cols="25" style="resize:none" disabled>{{item.apprtxt}}</textarea></div>
+              </div>
+            </div>
+          </div>
+        </td>
+        <td at-title="Feedback">
+          <div ng-switch="item.ratingtype">
+            <div ng-switch-when="starrate">
+              <div ng-if="item.feedback"><textarea rows="2" cols="25" style="resize:none" disabled>{{item.feedback}}</textarea></div>
+              <div ng-if="!item.feedback">NO FEEDBACK</div>
+            </div>
+          </div>
+
+        </td>
+
+        <td at-title="Functional Team"> {{item.team}}</td>
+
+        <td at-title="Status">
+          <div>
+            <div ng-if="item.status==1">accepted</div>
+            <div ng-if="item.status==-1">rejected
+
+              <button ng-click="showTicketModalEdit(item)"> edit </button>
+               <!-- Modal begin here Ticket edit -->
+               <div modal="TicketModalEdit" close="closeTicketModalEdit()">
+                 <div class="modal-header">
+                     <h4>Edit</h4>
+                 </div>
+                 <div class="modal-body">
+                   <form class="w3-container w3-card-4" ng-submit="resubmit_ticketform(modalitem, myFile); closeTicketModalEdit()">
+                     <hr>
+
+                     <label>APPRECIATED USER:</label>
+                     <br>     <span><b>SELF:</b>&nbsp;<input type="radio" value="{{user}}" ng-model="modalitem.appreciated_user" name="modal_user_ticketbased"/></span>
+                       <span><b>ENTER APPRECIATED USER:</b></span>
+                             <input type="text" ng-model="modalitem.appreciated_user" required/>
+                     <hr>
+
+
+
+                                       <label>SELECT CLIENT:</label>
+                   <select class="w3-select w3-border" name="option" ng-model="modalitem.client" required>
+                    <option value="" disabled selected>select client</option>
+                    <option ng-repeat="item in clientList" value="{{item}}">{{item}}</option>
+                   </select>
+                   <br><hr>
+                   <label>SELECT TICKET NUMBER:</label>
+                    <input list="browser" ng-model="modalitem.ticketno">
+                    <datalist id="browser">
+                     <option ng-repeat="item in ticketList" value="{{item.ticketno}}">{{item.ticketno}}</option>
+                   </datalist>
+
+
+                   <p>
+                      Ticket Category: {{modalitem.ticketCategory}}
+                   </p>
+                   <hr>
+                   <label>DATE OF APPRECIATION:</label>
+                   <select name="DOBDay" ng-model="testdate.day" required>
+                   <option value="" disabled selected> - Day - </option>
+                   <option value="01">01</option>
+                   <option value="02">02</option>
+                   <option value="03">03</option>
+                   <option value="04">04</option>
+                   <option value="05">05</option>
+                   <option value="06">06</option>
+                   <option value="07">07</option>
+                   <option value="08">08</option>
+                   <option value="09">09</option>
+                   <option value="10">10</option>
+                   <option value="11">11</option>
+                   <option value="12">12</option>
+                   <option value="13">13</option>
+                   <option value="14">14</option>
+                   <option value="15">15</option>
+                   <option value="16">16</option>
+                   <option value="17">17</option>
+                   <option value="18">18</option>
+                   <option value="19">19</option>
+                   <option value="20">20</option>
+                   <option value="21">21</option>
+                   <option value="22">22</option>
+                   <option value="23">23</option>
+                   <option value="24">24</option>
+                   <option value="25">25</option>
+                   <option value="26">26</option>
+                   <option value="27">27</option>
+                   <option value="28">28</option>
+                   <option value="29">29</option>
+                   <option value="30">30</option>
+                   <option value="31">31</option>
+                   </select>
+
+                   <select name="DOBMonth" ng-model="testdate.month" required>
+                   <option value="" disabled selected> - Month - </option>
+                   <option value="01">01</option>
+                   <option value="02">02</option>
+                   <option value="03">03</option>
+                   <option value="04">04</option>
+                   <option value="05">05</option>
+                   <option value="06">06</option>
+                   <option value="07">07</option>
+                   <option value="08">08</option>
+                   <option value="09">09</option>
+                   <option value="10">10</option>
+                   <option value="11">11</option>
+                   <option value="12">12</option>
+                   </select>
+
+
+                   <select name="DOBYear" ng-model="testdate.year" required>
+                   <option value="" disabled selected> - Year - </option>
+                   <option value="2020">2020</option>
+                   <option value="2019">2019</option>
+                   <option value="2018">2018</option>
+                   <option value="2017">2017</option>
+                   <option value="2016">2016</option>
+                   <option value="2015">2015</option>
+                   <option value="2014">2014</option>
+                   <option value="2013">2013</option>
+                   <option value="2012">2012</option>
+                   <option value="2011">2011</option>
+
+                   </select>
+
+
+                   <hr>
+                   <label>SELECT SEVERITY:</label>
+                    <select class="w3-select w3-border" name="option" ng-model="modalitem.severity" required>
+                      <option value="" disabled selected>SELECT SEVERITY</option>
+                      <option value="1">1</option>
+                      <option value="2">2</option>
+                      <option value="3">3</option>
+                      <option value="4">4</option>
+                            </select>
+                    <br><hr>
+                   <label> CHECK ALL APPRECIATION REASONS:</label>
+
+                   <label> <input type="checkbox" value="QUICK RESPONSE" name="type" ng-model="modalitem.state.quickres"/>&nbsp; QUICK RESPONSE</label>&nbsp;
+                    <label><input type="checkbox" value="COMPLEX SOLUTION" name="type" ng-model="modalitem.state.complexsol"/>&nbsp; COMPLEX SOLUTION</label>&nbsp;
+                         <label><input type="checkbox" value="OTHER" name="type" ng-model="modalitem.state.other"/>&nbsp; OTHER</label>
+                   <br>
+                   <hr>
+                   <label>Functional Team:</label>
+                   <select name="team" ng-model="modalitem.team" required>
+                     <option value="" disabled selected>select</option>
+                     <option ng-repeat="t in functionalteams" value="{{t.name}}">{{t.name}}</option>
+                   </select>
+                   <hr>
+                   <label>APPRECIATION:</label>
+                   <label><input type="radio" value="internal" name="typo" ng-model="modalitem.type" required/> &nbsp;INTERNAL</label>
+                   <label><input type="radio" value="external" name="typo" ng-model="modalitem.type" required/> &nbsp;EXTERNAL</label>
+                   <br>
+                   <hr>
+                   <div ng-switch="modalitem.type">
+                   <div ng-switch-when="internal">
+                   <label>APPRECIATION TEXT: </label>
+                   <br>
+                   <textarea rows="4" cols="50" style="resize:none" required ng-model="modalitem.apprtxt" maxlength="1000" required>
+
+                   </textarea>
+                   <br>
+                   <hr>
+
+                   </div>
+                   <div ng-switch-when="external">
+
+                   <label>APPRECIATION TYPE:</label>
+
+                   <input type="radio" value="starrate" name="approval" ng-model="modalitem.ratingtype" required/> <label>Star Rating</label>
+                   <input type="radio" value="appr" name="approval" ng-model="modalitem.ratingtype" required/> <label>WRITTEN APPRECIATION</label>
+                   <div ng-switch="modalitem.ratingtype">
+                     <div ng-switch-when="starrate">
+                       <br>
+                       <label>Star rate:</label>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                       <select ng-model="modalitem.stars" style="max-width:60%;" required>
+
+                       <option value="1" >1</option>
+                       <option value="2" >2</option>
+                       <option value="3" >3</option>
+                       <option value="4" >4</option>
+                       <option value="5" >5</option>
+                        </select>
+
+                        <label>Feedback (optional): </label>
+                        <br>
+                        <textarea rows="3" cols="70" ng-model="modalitem.feedback" style="resize:none" maxlength="1000"></textarea>
+
+                     </div>
+                   <div ng-switch-when="appr">
+                   <label>APPRECIATION TEXT: </label>
+                   <br>
+                   <textarea rows="4" cols="50" style="resize:none" required ng-model="modalitem.apprtxt" maxlength="1000" required>
+
+                   </textarea>
+                   <br>
+                   <hr>
+
+                   </div>
+                   </div>
+                   </div>
+                   </div>
+
+
+                  <!-- <div>
+                   <input  class="w3-btn w3-teal" type="file" file-model="myFile" />
+                   </div>
+              -->
+
+                   <hr>
+                    <p><button class="w3-btn w3-teal" type="submit">SUBMIT</button></p>
+                   </form>
+                 </div>
+                 <div class="modal-footer">
+                   <button class="btn" ng-click="closeTicketModalEdit()">Close</button>
+                 </div>
+               </div>
+
+
+            </div>
+            <div ng-if="item.status==0">pending</div>
+          </div>
+        </td>
+        <td at-title="Status Message">
+          <div ng-switch="item.status">
+            <div ng-switch-when="1"><textarea rows="2" cols="25" style="resize:none" disabled>{{item.approval_reason}}</textarea></div>
+            <div ng-switch-when="-1"><textarea rows="2" cols="25" style="resize:none" disabled>{{item.rejection_reason}}</textarea></div>
+          </div>
+        </td>
+        </tr>
+      </tbody>
+      </table>
+        <at-pagination at-list="ticket_data.mine" at-config="config"></at-pagination>
+          </div>
+
+<div id="statusnonticket" class="w3-container city" style="display:none">
+  <b>PROJECT</b><br><br>
+  <table class="table table-striped table-bordered"  at-paginated at-table at-list="nonticket_data.mine" at-config="config">
+    <thead style="color:white;background-color:gray"></thead>
+    <tbody>
+      <tr>
+        <td at-sortable  at-title="Appreciated Username" at-implicit at-attribute="appreciated_username"></td>
+        <td at-sortable at-title="Client" at-implicit at-attribute="client"></td>
+        <td at-sortable at-title="Date of Appreciation" at-implicit at-attribute="date"></td>
+        <td  at-title="Type">
+          {{item.type}}
+        </td>
+        <td  at-title="Written Appreciation">
+          <textarea rows="2" cols="25" style="resize:none" disabled>{{item.apprtxt}}</textarea>
+        </td>
+        <td at-sortable at-title="Appreciated By" at-implicit at-attribute="appreciatedby"></td>
+        <td  at-title="Functional Team">
+          {{item.team}}
+        </td>
+        <td at-title="Status">
+
+            <div ng-switch="item.status">
+              <div ng-switch-when="1">accepted</div>
+              <div ng-switch-when="-1">rejected
+
+                <button ng-click="showNonTicketModalEdit(item)">edit</button>
+                <!-- Modal begin here NONTicket edit -->
+                         <div modal="NonTicketModalEdit" close="closeNonTicketModalEdit()">
+                           <div class="modal-header">
+                               <h4>Edit</h4>
+                           </div>
+                           <div class="modal-body">
+                             <form class="w3-container w3-card-4" ng-submit="resubmit_non_ticketform(modalitem, myFile); closeNonTicketModalEdit()">
+                             <hr>
+
+                             <label>APPRECIATED USER:</label>
+                             <br>     <span><b>SELF:</b>&nbsp;<input type="radio" value="{{user}}" ng-model="modalitem.appreciated_user" name="modal_user_nonticketbased"/></span>
+                               <span><b>ENTER APPRECIATED USER:</b></span>
+                                     <input type="text" ng-model="modalitem.appreciated_user" required/>
+                             <hr>
+
+                             <label>SELECT CLIENT:</label>
+                             <select class="w3-select w3-border" name="option" required ng-model="modalitem.client">
+                              <option value="" disabled>select client</option>
+                              <option ng-repeat="item in clientList" value="{{item}}">{{item}}</option>
+                             </select>
+
+                             <hr>
+                             <label>DATE OF APPRECIATION:</label>
+                             <select name="DOBDay" ng-model="testdate.day" required>
+                             <option value="" disabled selected> - Day - </option>
+                             <option value="01">01</option>
+                             <option value="02">02</option>
+                             <option value="03">03</option>
+                             <option value="04">04</option>
+                             <option value="05">05</option>
+                             <option value="06">06</option>
+                             <option value="07">07</option>
+                             <option value="08">08</option>
+                             <option value="09">09</option>
+                             <option value="10">10</option>
+                             <option value="11">11</option>
+                             <option value="12">12</option>
+                             <option value="13">13</option>
+                             <option value="14">14</option>
+                             <option value="15">15</option>
+                             <option value="16">16</option>
+                             <option value="17">17</option>
+                             <option value="18">18</option>
+                             <option value="19">19</option>
+                             <option value="20">20</option>
+                             <option value="21">21</option>
+                             <option value="22">22</option>
+                             <option value="23">23</option>
+                             <option value="24">24</option>
+                             <option value="25">25</option>
+                             <option value="26">26</option>
+                             <option value="27">27</option>
+                             <option value="28">28</option>
+                             <option value="29">29</option>
+                             <option value="30">30</option>
+                             <option value="31">31</option>
+                             </select>
+
+                             <select name="DOBMonth" ng-model="testdate.month" required>
+                             <option value="" disabled selected> - Month - </option>
+                             <option value="01">01</option>
+                             <option value="02">02</option>
+                             <option value="03">03</option>
+                             <option value="04">04</option>
+                             <option value="05">05</option>
+                             <option value="06">06</option>
+                             <option value="07">07</option>
+                             <option value="08">08</option>
+                             <option value="09">09</option>
+                             <option value="10">10</option>
+                             <option value="11">11</option>
+                             <option value="12">12</option>
+                             </select>
+
+
+                             <select name="DOBYear" ng-model="testdate.year" required>
+                             <option value="" disabled selected> - Year - </option>
+                             <option value="2020">2020</option>
+                             <option value="2019">2019</option>
+                             <option value="2018">2018</option>
+                             <option value="2017">2017</option>
+                             <option value="2016">2016</option>
+                             <option value="2015">2015</option>
+                             <option value="2014">2014</option>
+                             <option value="2013">2013</option>
+                             <option value="2012">2012</option>
+                             <option value="2011">2011</option>
+
+                             </select>
+                             <hr>
+                             <label>Functional Team:</label>
+                             <select name="team" ng-model="modalitem.team" required>
+                               <option value="" disabled selected>select</option>
+                               <option ng-repeat="t in functionalteams" value="{{t.name}}">{{t.name}}</option>
+                             </select>
+
+                             <hr>
+                             <label>APPRECIATION:</label>
+                                 <label><input type="radio" value="internal" name="typo" required ng-model="modalitem.type" /> &nbsp;INTERNAL</label>
+                                 <label><input type="radio" value="external" name="typo" required ng-model="modalitem.type"/> &nbsp;EXTERNAL</label>
+                             <hr>
+                             <label>APPRECIATED BY:</label>
+                               <input type="text" ng-model="modalitem.appreciatedby" required>
+                             <hr>
+                             <label>APPRECIATION TEXT:</label>
+                             <br>
+                             <textarea rows="4" cols="50" style="resize:none" required ng-model="modalitem.apprtxt" maxlength="1000">
+
+                             </textarea>
+
+                         <!--    <div>
+                             <input  class="w3-btn w3-teal" type="file" file-model="myFile" />
+                           </div> -->
+
+                             <hr>
+                             <button class="w3-btn w3-teal" type="submit">SUBMIT</button>
+                             <hr>
+
+                             </form>
+
+                           </div>
+                           <div class="modal-footer">
+                             <button class="btn" ng-click="closeNonTicketModalEdit()">Close</button>
+                           </div>
+                         </div>
+
+
+              </div>
+              <div ng-switch-when="0">pending</div>
+            </div>
+
+        </td>
+        <td  at-title="Status message">
+
+            <div ng-switch="item.status">
+              <div ng-switch-when="1"><textarea rows="2" cols="25" style="resize:none" disabled>{{item.approval_reason}}</textarea></div>
+              <div ng-switch-when="-1"><textarea rows="2" cols="25"style="resize:none"  disabled>{{item.rejection_reason}}</textarea></div>
+            </div>
+
+        </td>
+      </tr>
+    </tbody>
+  </table>
+  <at-pagination at-list="nonticket_data.mine" at-config="config"></at-pagination>
+  </div>
+
+          <style>
+          table {
+            font-family: arial, sans-serif;
+            border-collapse: collapse;
+            width: 100%;
+
+          }
+
+          td, th {
+            font-size: 10pt;
+            border: 1px solid #dddddd;
+            text-align: left;
+            padding: 8px;
+          }
+
+
+          </style>
+
+<style>
+td {
+  width:20%;
+}
+</style>
+
+      <!-- DASHBOARD SECTION -->
+  <!--  dashboard other section -->
+<div id="dashboardother" class="w3-container city" style="display:none">
+  <b>OTHERS</b><br><br>
+  <table class="table table-striped table-bordered"  at-paginated at-table at-list="other_dashboard" at-config="config" >
+    <thead style="color:white;background-color:gray;"></thead>
+    <tbody>
+    <tr>
+        <td at-sortable  at-title=" Username" at-implicit at-attribute="username"></td>
+      <td at-sortable  at-title="Appreciated Username" at-implicit at-attribute="appreciated_username"></td>
+      <td at-sortable at-title="Other" at-implicit at-attribute="client"></td>
+      <td at-sortable at-title="Date of Appreciation" at-implicit at-attribute="date"></td>
+      <td at-title="Type">{{item.type}}</td>
+      <td at-title="Written Appreciation"><textarea rows="2" cols="25" style="resize:none" disabled>{{item.apprtxt}}</textarea></td>
+      <td at-sortable at-title="Appreciated By" at-implicit at-attribute="appreciatedby"></td>
+      <td at-title="Functional Team"> {{item.team}} </td>
+      <td at-title="Status message">
+        <div ng-switch="item.status">
+          <div ng-switch-when="1"><textarea rows="2" cols="25" style="resize:none" disabled>{{item.approval_reason}}</textarea></div>
+        </div>
+      </td>
+      </tr>
+    </tbody>
+    </table>
+    <at-pagination at-list="other_dashboard" at-config="config"></at-pagination>
+</div>
+
+  <div id="dashboardescalation" class="w3-container city" style="display:none">
+    <b>ESCALATION</b><br><br>
+    <table class="table table-striped table-bordered"  at-paginated at-table at-list="escalation_dashboard" at-config="config">
+      <thead style="color:white;background-color:gray"></thead>
+      <tbody>
+
+      <tr>
+        <td at-sortable at-title="Username" at-implicit at-attribute="username"></td>
+        <td at-sortable at-title="Escalated Username" at-implicit at-attribute="appreciated_username"></td>
+        <td at-sortable at-title="Client" at-implicit at-attribute="client"></td>
+        <td at-title="Case No"><div ng-if="item.ticketno==''" || ng-if="!item.ticketno"><font><I>no ticket number</I></font></div>
+          <div ng-if="item.ticketno== null"><font><I>no ticket number</I></font></div>
+          <div ng-if="item.ticketno">{{item.ticketno}}</div>
+        </td>
+        <td  at-title="Severity">{{item.severity}}</td>
+        <td at-sortable at-title="Date of Escalation Report" at-implicit at-attribute="date"></td>
+
+        <td at-title="Date Resolved"><div ng-switch="item.dateissue">
+          <div ng-switch-when="--"><I>no entry</I></div>
+          <div ng-switch-default> {{item.dateissue}}</div>
+        </div>
+      </td>
+      <td at-title="Escalation Raised by">{{item.raisedby}}</td>
+      <td at-title="IBM Issue">{{item.ibmissue}}</td>
+      <td at-title="Type">{{item.type}}</td>
+      <td at-title="Functional Team">{{item.team}}</td>
+      <td at-title="Description"><textarea rows="2" cols="25" style="resize:none" disabled>{{item.apprtxt}}</textarea></td>
+      <td at-title="Action Taken">
+        <div ng-if="item.actiontaken"><textarea rows="2" cols="25" style="resize:none" disabled>{{item.actiontaken}}</textarea></div>
+        <div ng-if="!item.actiontaken"><I>NO ACTION TAKEN</I></div>
+      </td>
+    </tr>
+  </tbody>
+  </table>
+  <at-pagination at-list="escalation_dashboard" at-config="config"></at-pagination>  </div>
+
+            <div id="dashboardticket" class="w3-container city" style="display:none">
+              <b>CLIENT-REQUEST</b><br><br>
+              <table class="table table-striped table-bordered"  at-paginated at-table at-list="ticket_dashboard " at-config="config">
+                <thead style="color:white;background-color:gray"></thead>
+                <tbody>
+                <tr>
+                  <td at-sortable  at-title="Username" at-implicit at-attribute="username"></td>
+                  <td at-sortable  at-title="Appreciated Username" at-implicit at-attribute="appreciated_username"></td>
+                  <td at-sortable at-title="Client" at-implicit at-attribute="client"></td>
+                  <td at-title="Case No">{{item.ticketno}}</td>
+                  <td at-sortable at-title="Date of Appreciation" at-implicit at-attribute="date"></td>
+                  <td at-title="Severity">{{item.severity}}</td>
+                  <td at-title="Appreciation Reason">
+                    <div>
+                      <div ng-if="item.state.quickres == true">quick solution;  </div>
+                      <div ng-if="item.state.complexsol == true">complex solution;</div>
+                      <div ng-if="item.state.other == true">other</div>
+                    </div>
+                  </td>
+                  <td at-title="Appreciation">{{item.type}}</td><!-- this is for appreciation -->
+                  <td at-title="Appreciation Comments">
+                    <div ng-switch="item.type">
+                      <div ng-switch-when="internal"><textarea rows="2" cols="25" style="resize:none" disabled>{{item.apprtxt}}</textarea></div>
+                      <div ng-switch-when="external">
+                        <div ng-switch="item.ratingtype">
+                          <div ng-switch-when="starrate">Star Rating ({{item.stars}} stars)</div>
+                          <div ng-switch-when="appr"><textarea rows="2" cols="25" style="resize:none" disabled>{{item.apprtxt}}</textarea></div>
+                        </div>
+                      </div>
+                    </div>
+                  </td>
+                  <td at-title="Feedback">
+                    <div ng-switch="item.ratingtype">
+                      <div ng-switch-when="starrate">
+                        <div ng-if="item.feedback"><textarea rows="2" cols="25" style="resize:none" disabled>{{item.feedback}}</textarea></div>
+                        <div ng-if="!item.feedback">NO FEEDBACK</div>
+                      </div>
+                    </div>
+
+                  </td>
+
+                  <td at-title="Functional Team"> {{item.team}}</td>
+
+                  <td at-title="Status Message">
+                    <div ng-switch="item.status">
+                      <div ng-switch-when="1"><textarea rows="2" cols="25" style="resize:none" disabled>{{item.approval_reason}}</textarea></div>
+                      <div ng-switch-when="-1"><textarea rows="2" cols="25" style="resize:none" disabled>{{item.rejection_reason}}</textarea></div>
+                    </div>
+                  </td>
+                  </tr>
+                </tbody>
+                </table>
+                  <at-pagination at-list="ticket_dashboard" at-config="config"></at-pagination>
+                  </div>
+
+              <div id="dashboardnonticket" class="w3-container city" style="display:none">
+                <b>PROJECT</b><br><br>
+
+                <table class="table table-striped table-bordered"  at-paginated at-table at-list="nonticket_dashboard" at-config="config">
+                  <thead style="color:white;background-color:gray"></thead>
+                  <tbody>
+                    <tr>
+
+                        <td at-sortable  at-title="Username" at-implicit at-attribute="username"></td>
+                      <td at-sortable  at-title="Appreciated Username" at-implicit at-attribute="appreciated_username"></td>
+                      <td at-sortable at-title="Client" at-implicit at-attribute="client"></td>
+                      <td at-sortable at-title="Date of Appreciation" at-implicit at-attribute="date"></td>
+                      <td  at-title="Type">
+                        {{item.type}}
+                      </td>
+                      <td  at-title="Written Appreciation">
+                        <textarea rows="2" cols="25" style="resize:none" disabled>{{item.apprtxt}}</textarea>
+                      </td>
+                      <td at-sortable at-title="Appreciated By" at-implicit at-attribute="appreciatedby"></td>
+                      <td  at-title="Functional Team">
+                        {{item.team}}
+                      </td>
+                      <td  at-title="Status message">
+
+                          <div ng-switch="item.status">
+                            <div ng-switch-when="1"><textarea rows="2" cols="25" style="resize:none" disabled>{{item.approval_reason}}</textarea></div>
+                            <div ng-switch-when="-1"><textarea rows="2" cols="25"style="resize:none"  disabled>{{item.rejection_reason}}</textarea></div>
+                          </div>
+
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+                <at-pagination at-list="nonticket_dashboard" at-config="config"></at-pagination>
+                   </div>
+
+                   <style>
+                   .left-col {
+                     float: left;
+                     width:45%;
+                   }
+                   .center-col {
+                     float: left;
+                     width: 35%;
+                   }
+                   .right-col {
+                     float: left;
+                     width: 20%;
+                   }
+                   </style>
+
+            <!-- TICKET BASED  SECTION -->
+
+            <div id="INPUT" class="w3-container city" style="display:none">
+              <form class="w3-container w3-card" ng-submit="post_ticketform()">
+                <br>
+                <div class="left-col">
+                <label>Appreciated User</label>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                <span>Self&nbsp;<input type="radio" value="{{user}}" ng-model="ticketform.appreciated_user" name="appreciated_user"/></span>
+                <span>Other</span>
+                <input type="text" placeholder="IBM Intranet Email ID" ng-model="ticketform.appreciated_user" required/>
+              </div>
+
+              <div class="centre-col">
+                <label >Client</label>&nbsp;&nbsp;
+
+                <select name="option" ng-model="ticketform.client" required>
+                  <option value="" disabled selected>select</option>
+                  <option ng-repeat="item in clientList" value="{{item}}">{{item}}</option>
+                </select>
+
+              </div>
+              <hr>
+              <div class="left-col">
+                <label>Case Number</label>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                <input list="tickets" style="width:150px"  ng-model="ticketform.ticketno" required>
+                <datalist id="tickets">
+                  <option ng-repeat="item in formticketList" value="{{item.ticketno}}">{{item.ticketno}}</option>
+                </datalist>
+
+
+              </div>
+              <div class="middle-col">
+                <label >Case Category </label>&nbsp;
+                <select name="category" ng-model="ticketform.ticketCategory" required>
+                <option value="" disabled selected>select</option>
+                <option value="S - PER - parent request">S - PER - parent request</option>
+                <option value="S - PER - Other">S - PER - Other</option>
+                <option value="S - PER - Communication">S - PER - Communication</option>
+                <option value="S - PER - New Map">S - PER - New Map</option>
+                <option value="S - PER - Map Change">S - PER - Map Change</option>
+                <option value="S - Map Change">S - Map Change</option>
+                <option value="S - PER - Communication">S - PER - Communication</option>
+                <option value="S - Proactive Notification">S - Proactive Notification</option>
+                <option value="S - Map Research">S - Map Research</option>
+                <option value="S - Administration">S - Administration</option>
+                <option value="S - Code List Update">S - Code List Update</option>
+                <option value="S - PER - New TP">S - PER - New TP</option>
+                <option value="S - PER TP Contact List Update">S - PER TP Contact List Update</option>
+                <option value="S - Troubleshoot">S - Troubleshoot</option>
+                <option value="S - Set up">S - Set up</option>
+                </select>
+              </div>
+              <hr>
+              <div class="left-col">
+                <label>Date of Appreciation</label>&nbsp;&nbsp;&nbsp;
+                <select name="DOBDay" ng-model="dated" required>
+                <option value="" disabled selected> - Day - </option>
+                <option value="01">01</option>
+                <option value="02">02</option>
+                <option value="03">03</option>
+                <option value="04">04</option>
+                <option value="05">05</option>
+                <option value="06">06</option>
+                <option value="07">07</option>
+                <option value="08">08</option>
+                <option value="09">09</option>
+                <option value="10">10</option>
+                <option value="11">11</option>
+                <option value="12">12</option>
+                <option value="13">13</option>
+                <option value="14">14</option>
+                <option value="15">15</option>
+                <option value="16">16</option>
+                <option value="17">17</option>
+                <option value="18">18</option>
+                <option value="19">19</option>
+                <option value="20">20</option>
+                <option value="21">21</option>
+                <option value="22">22</option>
+                <option value="23">23</option>
+                <option value="24">24</option>
+                <option value="25">25</option>
+                <option value="26">26</option>
+                <option value="27">27</option>
+                <option value="28">28</option>
+                <option value="29">29</option>
+                <option value="30">30</option>
+                <option value="31">31</option>
+                </select>
+
+                <select name="DOBMonth" ng-model="datem" required>
+                <option value="" disabled selected> - Month - </option>
+                <option value="01">01</option>
+                <option value="02">02</option>
+                <option value="03">03</option>
+                <option value="04">04</option>
+                <option value="05">05</option>
+                <option value="06">06</option>
+                <option value="07">07</option>
+                <option value="08">08</option>
+                <option value="09">09</option>
+                <option value="10">10</option>
+                <option value="11">11</option>
+                <option value="12">12</option>
+                </select>
+
+
+                <select name="DOBYear" ng-model="datey" required>
+                <option value="" disabled selected> - Year - </option>
+                <option value="2020">2020</option>
+                <option value="2019">2019</option>
+                <option value="2018">2018</option>
+                <option value="2017">2017</option>
+                <option value="2016">2016</option>
+                <option value="2015">2015</option>
+                <option value="2014">2014</option>
+                <option value="2013">2013</option>
+                <option value="2012">2012</option>
+                <option value="2011">2011</option>
+
+                </select>
+
+              </div>
+              <div class="mid-col">
+                <label>Severity</label>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                <select name="option" ng-model="ticketform.severity" required>
+                <option value="" disabled selected>select</option>
+                <option value="1">1</option>
+                <option value="2">2</option>
+                <option value="3">3</option>
+                <option value="4">4</option>
+                </select>
+              </div>
+<hr>
+          <div class="left-col">
+            <label>Appreciation Reasons</label>&nbsp;
+
+            <input type="checkbox" value="QUICK RESPONSE" name="type" ng-model="ticketform.state.quickres"/>&nbsp; Quick Response&nbsp;
+            <input type="checkbox" value="COMPLEX SOLUTION" name="type" ng-model="ticketform.state.complexsol"/>&nbsp; Complex Solution&nbsp;
+            <input type="checkbox" value="OTHER" name="type" ng-model="ticketform.state.other"/>&nbsp; Other
+
+          </div>
+          <div class="mid-col">
+            <label>Functional Team</label>&nbsp;
+            <select name="team" ng-model="ticketform.team" required>
+            <option value="" disabled selected>select</option>
+            <option ng-repeat="t in functionalteams" value="{{t.name}}">{{t.name}}</option>
+            </select>
+
+          </div>
+          <hr>
+          <div class="left-col">
+            <label>Appreciation</label>
+            <input type="radio" value="internal" name="typo" ng-model="ticketform.type" required/> &nbsp;Internal
+            <input type="radio" value="external" name="typo" ng-model="ticketform.type" required/> &nbsp;External
+
+          </div>
+
+          <div class="left-col" style='width: 70%;'>
+            <div ng-switch="ticketform.type">
+            <div ng-switch-when="internal"><br>
+              <label>Appreciation Text </label>
+              <br>
+              <textarea rows="3" cols="70" required ng-model="ticketform.apprtxt" style="resize:none" maxlength="1000" placeholder="Maximum of 1000 words">
+              </textarea>
+
+            </div>
+            <div ng-switch-when="external"><br>
+
+              <label>Appreciation Type</label>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+
+              <input type="radio" value="starrate" name="approval" ng-model="ticketform.ratingtype" required/> Star Rating
+              <input type="radio" value="appr" name="approval" ng-model="ticketform.ratingtype" required/> Written Appreciation
+              <br>
+              <div ng-switch="ticketform.ratingtype">
+                <div ng-switch-when="starrate">
+                  <label>Star Rate</label>
+                  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+
+                  <select name="stars" ng-model="ticketform.stars" style="max-width:60%;" required>
+                    <option value="" disabled selected>select</option>
+                    <option value="1" >1</option>
+                    <option value="2" >2</option>
+                    <option value="3" >3</option>
+                    <option value="4" >4</option>
+                    <option value="5" >5</option>
+                  </select>
+                  <br>
+
+                  <label>Feedback (optional) </label>
+
+                  <br>
+                  <textarea rows="3" cols="50" ng-model="ticketform.feedback" style="resize:none;" maxlength="1000" placeholder="NO FEEDBACK"></textarea>
+
+                </div>
+                <div ng-switch-when="appr">
+                  <label>Appreciation Text </label>
+                  <br>
+                  <textarea rows="3" cols="70" required ng-model="ticketform.apprtxt" style="resize:none" maxlength="1000">
+
+                  </textarea>
+
+
+                </div>
+              </div>
+            </div>
+            </div>
+          </div>
+          <hr>
+          <div class="left-col">
+              <p><button class="w3-btn w3-teal"  type="submit">Submit</button></p>
+
+            </div>
+          </form>
+          <br><b>{{messaget}}</b>
+        </div>
+
+            <!--NON TICKET BASED  SECTION -->
+
+            <div id="ntc" class="w3-container city" style="display:none">
+              <form class="w3-container w3-card" ng-submit="post_non_ticketform()">
+                <br>
+                <div class="left-col">
+                <label>Appreciated User</label>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                  <span>Self&nbsp;<input type="radio" value="{{user}}" ng-model="non_ticketform.appreciated_user" name="appreciated_user_nonticketbased"/></span>
+                  <span>Other</span>
+                        <input type="text" placeholder="IBM Intranet Email ID" ng-model="non_ticketform.appreciated_user" required/>
+                      </div>
+              <label>Client</label>&nbsp;
+              <select name="option" required ng-model="non_ticketform.client">
+               <option value="" disabled selected>select</option>
+               <option ng-repeat="item in clientList" value="{{item}}">{{item}}</option>
+              </select>
+              <hr>
+            <div class="left-col">
+              <label>Appreciated By </label>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+              <input type="text" ng-model="non_ticketform.appreciatedby" placeholder="Name" required/>
+            </div>
+              <label>Functional Team</label>&nbsp;
+              <select name="team" ng-model="non_ticketform.team" required>
+                <option value="" disabled selected>select</option>
+                <option ng-repeat="t in functionalteams" value="{{t.name}}">{{t.name}}</option>
+              </select>
+
+
+            <hr>
+            <div class="left-col">
+            <label>Date of Appreciation</label>&nbsp;&nbsp;&nbsp;
+            <select name="DOBDay" ng-model="dated" required>
+            	<option value="" disabled selected> - Day - </option>
+              <option value="01">01</option>
+              <option value="02">02</option>
+              <option value="03">03</option>
+              <option value="04">04</option>
+              <option value="05">05</option>
+              <option value="06">06</option>
+              <option value="07">07</option>
+              <option value="08">08</option>
+              <option value="09">09</option>
+              <option value="10">10</option>
+              <option value="11">11</option>
+              <option value="12">12</option>
+              <option value="13">13</option>
+              <option value="14">14</option>
+              <option value="15">15</option>
+              <option value="16">16</option>
+              <option value="17">17</option>
+              <option value="18">18</option>
+              <option value="19">19</option>
+              <option value="20">20</option>
+              <option value="21">21</option>
+              <option value="22">22</option>
+              <option value="23">23</option>
+              <option value="24">24</option>
+              <option value="25">25</option>
+              <option value="26">26</option>
+              <option value="27">27</option>
+              <option value="28">28</option>
+              <option value="29">29</option>
+              <option value="30">30</option>
+              <option value="31">31</option>
+            </select>
+
+            <select name="DOBMonth" ng-model="datem" required>
+            	<option value="" disabled selected> - Month - </option>
+              <option value="01">01</option>
+            	<option value="02">02</option>
+            	<option value="03">03</option>
+            	<option value="04">04</option>
+            	<option value="05">05</option>
+            	<option value="06">06</option>
+            	<option value="07">07</option>
+            	<option value="08">08</option>
+            	<option value="09">09</option>
+            	<option value="10">10</option>
+            	<option value="11">11</option>
+            	<option value="12">12</option>
+            </select>
+
+
+            <select name="DOBYear" ng-model="datey" required>
+            	<option value="" disabled selected> - Year - </option>
+            	<option value="2020">2020</option>
+            	<option value="2019">2019</option>
+            	<option value="2018">2018</option>
+            	<option value="2017">2017</option>
+            	<option value="2016">2016</option>
+            	<option value="2015">2015</option>
+            	<option value="2014">2014</option>
+            	<option value="2013">2013</option>
+            	<option value="2012">2012</option>
+            	<option value="2011">2011</option>
+            </select>
+            </div>
+            <label>Appreciation</label>
+            <input type="radio" value="internal" name="typo" required ng-model="non_ticketform.type"/> &nbsp;Internal
+            <input type="radio" value="external" name="typo" required ng-model="non_ticketform.type"/> &nbsp;External
+
+            <hr>
+            <label>Appreciation Text </label>
+            <br>
+            <textarea rows="3" cols="50" required ng-model="non_ticketform.apprtxt" style="resize:none" maxlength="1000" placeholder="Maximum of 1000 words">
+            </textarea>
+            <!--
+            <div>
+              <input class="w3-btn w3-teal" type="file" file-model="myFile" />
+            </div>
+            -->
+            <br>
+            <br>
+            <button class="w3-btn w3-teal" type="submit">Submit</button>
+            <br>
+            <br>
+              </form>
+  <br>
+              <b>{{messagent}}</b>
+            </div>
+
+            <!--ESCALATION BASED  SECTION -->
+
+            <div id="eb" class="w3-container city" style="display:none">
+              <form  class="w3-container w3-card" ng-submit="post_escalationform()">
+                <br>
+                <div class="left-col">
+                <label>User Associated with Escalation</label>
+                <input type="text" placeholder="  IBM Intranet Email ID" ng-model="escalationform.appreciated_user" required/>
+              </div>
+                <label>Client</label>&nbsp;&nbsp;
+                <select name="option" ng-model="escalationform.client" required>
+                  <option value="" disabled selected>select</option>
+                  <option ng-repeat="item in clientList" value="{{item}}">{{item}}</option>
+                </select>
+                <br><hr>
+                <div class="left-col">
+                <label>Case Number</label>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                <input list="browser2" style="width:150px" name="option"  ng-model="escalationform.ticketno" >
+
+                  <datalist id="browser2">
+                    <option ng-repeat="item in escticketList" value="{{item.ticketno}}">{{item.ticketno}}</option>
+                  </datalist>
+                </div>
+                  <label>Severity</label>&nbsp;&nbsp;&nbsp;
+                  <select name="option" ng-model="escalationform.severity">
+                  <option value="" disabled selected>select</option>
+                  <option value="1">1</option>
+                  <option value="2">2</option>
+                  <option value="3">3</option>
+                  <option value="4">4</option>
+                  </select>
+                  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                  <label><b>Case Category</b></label> &nbsp;{{escalationform.ticketCategory}}
+                  <select name="category" ng-model="escalationform.ticketCategory" required>
+                  <option value="" disabled selected>select</option>
+                  <option value="S - PER - parent request">S - PER - parent request</option>
+                  <option value="S - PER - Other">S - PER - Other</option>
+                  <option value="S - PER - Communication">S - PER - Communication</option>
+                  <option value="S - PER - New Map">S - PER - New Map</option>
+                  <option value="S - PER - Map Change">S - PER - Map Change</option>
+                  <option value="S - Map Change">S - Map Change</option>
+                  <option value="S - PER - Communication">S - PER - Communication</option>
+                  <option value="S - Proactive Notification">S - Proactive Notification</option>
+                  <option value="S - Map Research">S - Map Research</option>
+                  <option value="S - Administration">S - Administration</option>
+                  <option value="S - Code List Update">S - Code List Update</option>
+                  <option value="S - PER - New TP">S - PER - New TP</option>
+                  <option value="S - PER TP Contact List Update">S - PER TP Contact List Update</option>
+                  <option value="S - Troubleshoot">S - Troubleshoot</option>
+                  <option value="S - Set up">S - Set up</option>
+                  </select>
+
+
+                <hr>
+
+                <div class="left-col">
+                <label>Date of Escalation Reported</label>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+
+                <select name="DOBDay" ng-model="dated" required>
+                  <option value="" disabled selected> - Day - </option>
+                  <option value="01">01</option>
+                  <option value="02">02</option>
+                  <option value="03">03</option>
+                  <option value="04">04</option>
+                  <option value="05">05</option>
+                  <option value="06">06</option>
+                  <option value="07">07</option>
+                  <option value="08">08</option>
+                  <option value="09">09</option>
+                  <option value="10">10</option>
+                  <option value="11">11</option>
+                  <option value="12">12</option>
+                  <option value="13">13</option>
+                  <option value="14">14</option>
+                  <option value="15">15</option>
+                  <option value="16">16</option>
+                  <option value="17">17</option>
+                  <option value="18">18</option>
+                  <option value="19">19</option>
+                  <option value="20">20</option>
+                  <option value="21">21</option>
+                  <option value="22">22</option>
+                  <option value="23">23</option>
+                  <option value="24">24</option>
+                  <option value="25">25</option>
+                  <option value="26">26</option>
+                  <option value="27">27</option>
+                  <option value="28">28</option>
+                  <option value="29">29</option>
+                  <option value="30">30</option>
+                  <option value="31">31</option>
+                </select>
+
+                <select name="DOBMonth" ng-model="datem" required>
+                  <option value="" disabled selected> - Month - </option>
+                  <option value="01">01</option>
+                  <option value="02">02</option>
+                  <option value="03">03</option>
+                  <option value="04">04</option>
+                  <option value="05">05</option>
+                  <option value="06">06</option>
+                  <option value="07">07</option>
+                  <option value="08">08</option>
+                  <option value="09">09</option>
+                  <option value="10">10</option>
+                  <option value="11">11</option>
+                  <option value="12">12</option>
+                </select>
+
+
+                <select name="DOBYear" ng-model="datey" required>
+                  <option value="" disabled selected> - Year - </option>
+                  <option value="2020">2020</option>
+                  <option value="2019">2019</option>
+                  <option value="2018">2018</option>
+                  <option value="2017">2017</option>
+                  <option value="2016">2016</option>
+                  <option value="2015">2015</option>
+                  <option value="2014">2014</option>
+                  <option value="2013">2013</option>
+                  <option value="2012">2012</option>
+                  <option value="2011">2011</option>
+
+                </select>
+              </div>
+
+                <label>Date Resolved</label>&nbsp;&nbsp;
+
+                <select name="DOBDay" ng-model="datedwhat" >
+                  <option value="" disabled selected> - Day - </option>
+                  <option value="01">01</option>
+                  <option value="02">02</option>
+                  <option value="03">03</option>
+                  <option value="04">04</option>
+                  <option value="05">05</option>
+                  <option value="06">06</option>
+                  <option value="07">07</option>
+                  <option value="08">08</option>
+                  <option value="09">09</option>
+                  <option value="10">10</option>
+                  <option value="11">11</option>
+                  <option value="12">12</option>
+                  <option value="13">13</option>
+                  <option value="14">14</option>
+                  <option value="15">15</option>
+                  <option value="16">16</option>
+                  <option value="17">17</option>
+                  <option value="18">18</option>
+                  <option value="19">19</option>
+                  <option value="20">20</option>
+                  <option value="21">21</option>
+                  <option value="22">22</option>
+                  <option value="23">23</option>
+                  <option value="24">24</option>
+                  <option value="25">25</option>
+                  <option value="26">26</option>
+                  <option value="27">27</option>
+                  <option value="28">28</option>
+                  <option value="29">29</option>
+                  <option value="30">30</option>
+                  <option value="31">31</option>
+                </select>
+
+                <select name="DOBMonth" ng-model="datemwhat" >
+                  <option value=""  disabled selected> - Month - </option>
+                  <option value="01">01</option>
+                  <option value="02">02</option>
+                  <option value="03">03</option>
+                  <option value="04">04</option>
+                  <option value="05">05</option>
+                  <option value="06">06</option>
+                  <option value="07">07</option>
+                  <option value="08">08</option>
+                  <option value="09">09</option>
+                  <option value="10">10</option>
+                  <option value="11">11</option>
+                  <option value="12">12</option>
+                </select>
+
+
+                <select name="DOBYear" ng-model="dateywhat" >
+                  <option value="" disabled  selected> - Year - </option>
+                  <option value="2020">2020</option>
+                  <option value="2019">2019</option>
+                  <option value="2018">2018</option>
+                  <option value="2017">2017</option>
+                  <option value="2016">2016</option>
+                  <option value="2015">2015</option>
+                  <option value="2014">2014</option>
+                  <option value="2013">2013</option>
+                  <option value="2012">2012</option>
+                  <option value="2011">2011</option>
+                </select>
+                <hr>
+
+                <div class="left-col">
+                <label>Escalation Raised By &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</label><input type="text"  placeholder="  Name" ng-model="escalationform.raisedby" maxlength="100" required />
+              </div>
+                <label>IBM Issue</label>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<input type="radio" value="yes" name="typo" ng-model="escalationform.ibmissue" required /> &nbsp;Yes
+                &nbsp;<input type="radio" value="no" name="typo" ng-model="escalationform.ibmissue" required /> &nbsp;No
+                <hr>
+<div class="left-col">
+                <label>Escalation Type</label>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                <select name="Escalation Type" ng-model="escalationform.type" required>
+                  <option value="" disabled selected>select</option>
+                  <option value="Technical">Technical</option>
+                  <option value="Process">Process</option>
+                  <option value="Non-Compliance">Non-Compliance</option>
+
+                </select>
+              </div>
+                <label>Functional Team</label>
+                <select name="team" ng-model="escalationform.team" required>
+                  <option value="" disabled selected>select</option>
+                  <option ng-repeat="t in functionalteams" value="{{t.name}}">{{t.name}}</option>
+                </select>
+                <hr>
+                <div class="left-col">
+                <label>Escalation Text</label>
+                <br>
+                <textarea rows="3" cols="50" placeholder="Maximum of 1000 words" ng-model="escalationform.apprtxt" style="resize:none" maxlength="1000" required>
+                </textarea>
+                </div>
+
+                <label>Action Taken</label>
+                <br>
+                <textarea rows="3" cols="50" placeholder="Maximum of 1000 words" ng-model="escalationform.actiontaken" style="resize:none;" maxlength="1000" required>
+                </textarea>
+                <hr>
+                <button class="w3-btn w3-teal" type="submit">Submit</button>
+                <br><br>
+              </form>
+              <br>
+              <b>{{messagee}}</b>
+            </div>
+
+          <!-- approvals-->
+
+
+
+
+              <div id="approvalother" class="w3-container city" style="display:none">
+                <b>OTHERS</b>
+                <br><br>  <table class="table table-striped table-bordered"  at-paginated at-table at-list="other_data.zero" at-config="config">
+                    <thead style="color:white;background-color:gray"></thead>
+                    <tbody>
+                    <tr>
+                      <td at-sortable  at-title="Username" at-implicit at-attribute="username"></td>
+                      <td at-sortable  at-title="Appreciated Username" at-implicit at-attribute="appreciated_username"></td>
+                      <td at-sortable at-title="Other" at-implicit at-attribute="client"></td>
+                      <td at-sortable at-title="Date of Appreciation" at-implicit at-attribute="date"></td>
+                      <td at-title="Type">{{item.type}}</td>
+                      <td at-title="Written Appreciation"><textarea rows="2" cols="25" style="resize:none" disabled>{{item.apprtxt}}</textarea></td>
+                      <td at-sortable at-title="Appreciated By" at-implicit at-attribute="appreciatedby"></td>
+                      <td at-title="Functional Team"> {{item.team}} </td>
+                      <td at-title="Action">
+                        <div>
+
+
+                          <button ng-click="showotherModalEdit(item)">edit</button>
+                          <!-- Modal begin here NONTicket edit -->
+                                   <div modal="otherModalEdit" close="closeotherModalEdit()">
+                                     <div class="modal-header">
+                                         <h4>Edit</h4>
+                                     </div>
+                                     <div class="modal-body">
+                                       <form class="w3-container w3-card-4" ng-submit="resubmit_other(modalitem, myFile); closeotherModalEdit()">
+                                       <hr>
+
+                                       <label>APPRECIATED USER:</label>
+                                       <br>     <span><b>SELF:</b>&nbsp;<input type="radio" value="{{user}}" ng-model="modalitem.appreciated_user" name="modal_user_otherbased" /></span>
+                                         <span><b>ENTER APPRECIATED USER:</b></span>
+                                               <input type="text" ng-model="modalitem.appreciated_user" required/>
+                                       <hr>
+
+                                       <label>OTHER:</label>
+                                       <select name="option" onchange='CheckColors(this.value);' required ng-model="modalitem.client">
+                                        <option value="" disabled selected>select</option>
+                                        <option value="STAKEHOLDERS" >STAKEHOLDERS</option>
+                                        <option value="CSM" >CSM</option>
+                                        <option value="Sales">SALES</option>
+                                        <option value="UR PROGRAMS">UR PROGRAMS</option>
+                                        <option value="OTHERS">OTHERS</option>
+
+                                      </select><br>
+
+                                       <hr>
+                                       <label>DATE OF APPRECIATION:</label>
+                                       <select name="DOBDay" ng-model="testdate.day" required>
+                                       <option value="" disabled selected> - Day - </option>
+                                       <option value="01">01</option>
+                                       <option value="02">02</option>
+                                       <option value="03">03</option>
+                                       <option value="04">04</option>
+                                       <option value="05">05</option>
+                                       <option value="06">06</option>
+                                       <option value="07">07</option>
+                                       <option value="08">08</option>
+                                       <option value="09">09</option>
+                                       <option value="10">10</option>
+                                       <option value="11">11</option>
+                                       <option value="12">12</option>
+                                       <option value="13">13</option>
+                                       <option value="14">14</option>
+                                       <option value="15">15</option>
+                                       <option value="16">16</option>
+                                       <option value="17">17</option>
+                                       <option value="18">18</option>
+                                       <option value="19">19</option>
+                                       <option value="20">20</option>
+                                       <option value="21">21</option>
+                                       <option value="22">22</option>
+                                       <option value="23">23</option>
+                                       <option value="24">24</option>
+                                       <option value="25">25</option>
+                                       <option value="26">26</option>
+                                       <option value="27">27</option>
+                                       <option value="28">28</option>
+                                       <option value="29">29</option>
+                                       <option value="30">30</option>
+                                       <option value="31">31</option>
+                                       </select>
+
+                                       <select name="DOBMonth" ng-model="testdate.month" required>
+                                       <option value="" disabled selected> - Month - </option>
+                                       <option value="01">01</option>
+                                       <option value="02">02</option>
+                                       <option value="03">03</option>
+                                       <option value="04">04</option>
+                                       <option value="05">05</option>
+                                       <option value="06">06</option>
+                                       <option value="07">07</option>
+                                       <option value="08">08</option>
+                                       <option value="09">09</option>
+                                       <option value="10">10</option>
+                                       <option value="11">11</option>
+                                       <option value="12">12</option>
+                                       </select>
+
+
+                                       <select name="DOBYear" ng-model="testdate.year" required>
+                                       <option value="" disabled selected> - Year - </option>
+                                       <option value="2020">2020</option>
+                                       <option value="2019">2019</option>
+                                       <option value="2018">2018</option>
+                                       <option value="2017">2017</option>
+                                       <option value="2016">2016</option>
+                                       <option value="2015">2015</option>
+                                       <option value="2014">2014</option>
+                                       <option value="2013">2013</option>
+                                       <option value="2012">2012</option>
+                                       <option value="2011">2011</option>
+
+                                       </select>
+                                       <hr>
+                                       <label>Functional Team:</label>
+                                       <select name="team" ng-model="modalitem.team" required>
+                                         <option value="" disabled selected>select</option>
+                                         <option ng-repeat="t in functionalteams" value="{{t.name}}">{{t.name}}</option>
+                                       </select>
+
+                                       <hr>
+                                       <label>APPRECIATION:</label>
+                                           <label><input type="radio" value="internal" name="typo" required ng-model="modalitem.type" /> &nbsp;INTERNAL</label>
+                                           <label><input type="radio" value="external" name="typo" required ng-model="modalitem.type"/> &nbsp;EXTERNAL</label>
+                                       <hr>
+                                       <label>APPRECIATED BY:</label>
+                                         <input type="text" ng-model="modalitem.appreciatedby" required/>
+                                       <hr>
+                                       <label>APPRECIATION TEXT:</label>
+                                       <br>
+                                       <textarea rows="4" cols="50" style="resize:none" required ng-model="modalitem.apprtxt" maxlength="1000">
+
+                                       </textarea>
+
+                                   <!--    <div>
+                                       <input  class="w3-btn w3-teal" type="file" file-model="myFile" />
+                                     </div> -->
+
+                                       <hr>
+                                       <button class="w3-btn w3-teal" type="submit">SUBMIT</button>
+                                       <hr>
+
+                                       </form>
+
+                                     </div>
+                                     <div class="modal-footer">
+                                       <button class="btn" ng-click="closeotherModalEdit()">Close</button>
+                                     </div>
+                                   </div>
+
+
+                        &nbsp;
+                      </div>
+                      </td>
+                      <td at-title="Approval">
+                        <form  ng-submit="setformstatus(item, 'other')">
+                          <select ng-model="item.status">
+                            <option value=1>accept</option>
+                            <option value=-1>reject</option>
+                            <option value=0>close</option>
+                          </select>
+                      <!--    <span>accept</span>   <input type="radio" value=1 name="approval" ng-model="item.status" required/>
+                          <span>reject</span>   <input type="radio" value=-1 name="approval" ng-model="item.status" required/>
+                          <span>Close</span>   <input type="radio" value=0 name="approval" ng-model="item.status" required/> -->
+                          <div ng-if="item.status" >
+                            <div ng-if="item.status==1">
+                              approval text:<br>
+                              <textarea rows="4" cols="25" ng-model="item.approval_reason" style="resize:none" maxlength="100" required>
+                              </textarea>
+                            </div>
+                            <div ng-if="item.status==-1">
+                              rejection text:<br>
+                              <textarea rows="4" cols="25" ng-model="item.rejection_reason" style="resize:none" maxlength="100" required>
+                              </textarea>
+                            </div>
+                            <br><br>
+                            <div ng-switch="item.status">
+                              <div ng-switch-when=1>
+                                <button type="submit" >submit</button>
+                              </div>
+                              <div ng-switch-when=-1>
+                                <button type="submit" >submit</button>
+                              </div>
+                              <div ng-switch-default>
+                              </div>
+                            </div>
+                          </div>
+                        </form>
+                      </td>
+
+                      </tr>
+                    </tbody>
+                    </table>
+                    <at-pagination at-list="other_data.zero" at-config="config"></at-pagination>
+
+              </div>
+
+
+              <div id="approvalticket" class="w3-container city" style="display:none">
+                <b>CLIENT-REQUEST</b>
+                <br><br>
+                <table class="table table-striped table-bordered"  at-paginated at-table at-list="ticket_data.zero" at-config="config">
+                  <thead style="color:white;background-color:gray"></thead>
+                  <tbody>
+                  <tr>
+                      <td at-sortable  at-title="Username" at-implicit at-attribute="username" ></td>
+                    <td at-sortable  at-title="Appreciated Username" at-implicit at-attribute="appreciated_username" ></td>
+                    <td at-sortable at-title="Client" at-implicit at-attribute="client"></td>
+                    <td at-title="Case No">{{item.ticketno}}</td>
+                  <td at-sortable at-title="Date of Appreciation" at-implicit at-attribute="date"></td>
+                    <td at-title="Severity">{{item.severity}}</td>
+                    <td at-title="Appreciation Reason">
+                      <div>
+                        <div ng-if="item.state.quickres == true">quick solution;  </div>
+                        <div ng-if="item.state.complexsol == true">complex solution;</div>
+                        <div ng-if="item.state.other == true">other</div>
+                      </div>
+                    </td>
+                    <td at-title="Appreciation">{{item.type}}</td><!-- this is for appreciation -->
+                    <td at-title="Appreciation Comments">
+                      <div ng-switch="item.type">
+                        <div ng-switch-when="internal"><textarea rows="2" cols="25" style="resize:none" disabled>{{item.apprtxt}}</textarea></div>
+                        <div ng-switch-when="external">
+                          <div ng-switch="item.ratingtype">
+                            <div ng-switch-when="starrate">Star Rating ({{item.stars}} stars)</div>
+                            <div ng-switch-when="appr"><textarea rows="2" cols="25" style="resize:none" disabled>{{item.apprtxt}}</textarea></div>
+                          </div>
+                        </div>
+                      </div>
+                    </td>
+                    <td at-title="Feedback">
+                      <div ng-switch="item.ratingtype">
+                        <div ng-switch-when="starrate">
+                          <div ng-if="item.feedback"><textarea rows="2" cols="25" style="resize:none" disabled>{{item.feedback}}</textarea></div>
+                          <div ng-if="!item.feedback">NO FEEDBACK</div>
+                        </div>
+                      </div>
+
+                    </td>
+
+                    <td at-title="Functional Team"> {{item.team}}</td>
+
+
+                    <td at-title="Action">
+
+                        <button ng-click="showTicketModalEdit(item)"> edit </button>
+                        <!-- Modal begin here Ticket edit -->
+                        <div modal="TicketModalEdit" close="closeTicketModalEdit()">
+                          <div class="modal-header">
+                            <h4>EDIT</h4>
+                          </div>
+                          <div class="modal-body">
+                            <form class="w3-container w3-card-4" ng-submit="resubmit_ticketform(modalitem, myFile); closeTicketModalEdit()">
+                              <hr>
+                              <label>APPRECIATED USER</label>
+                              <br>     <span><b>SELF</b>&nbsp;<input type="radio" value="{{user}}" ng-model="modalitem.appreciated_user" name="modal_appreciated_lead_ticketbased"/></span>
+                              <span><b>OTHER</b></span>
+                              <input type="text" placeholder="IBM Intranet Email ID" ng-model="modalitem.appreciated_user" required />
+                              <hr>
+                              <label>CLIENT</label>
+                              <select class="w3-select w3-border" name="option" ng-model="modalitem.client" required>
+                                <option value="" disabled selected>-- Select --</option>
+                                <option ng-repeat="item in clientList" value="{{item}}">{{item}}</option>
+                              </select>
+                              <br><hr>
+                              <label>TICKET NUMBER</label>
+                              <input list="browser" class="w3-select w3-border" name="option"  ng-model="modalitem.ticketno" required>
+                                <datalist id="browser">
+                                <option ng-repeat="item in formticketList" value="{{item.ticketno}}">{{item.ticketno}}</option>
+                                </datalist>
+                              <br>
+                              <label>TICKET CATEGORY</label> {{modalitem.ticketCategory}}
+                              <hr>
+                              <label>DATE OF APPRECIATION</label>
+                              <select name="DOBDay" ng-model="testdate.day" required>
+                                <option value="" disabled selected> - Day - </option>
+                                <option value="01">01</option>
+                                <option value="02">02</option>
+                                <option value="03">03</option>
+                                <option value="04">04</option>
+                                <option value="05">05</option>
+                                <option value="06">06</option>
+                                <option value="07">07</option>
+                                <option value="08">08</option>
+                                <option value="09">09</option>
+                                <option value="10">10</option>
+                                <option value="11">11</option>
+                                <option value="12">12</option>
+                                <option value="13">13</option>
+                                <option value="14">14</option>
+                                <option value="15">15</option>
+                                <option value="16">16</option>
+                                <option value="17">17</option>
+                                <option value="18">18</option>
+                                <option value="19">19</option>
+                                <option value="20">20</option>
+                                <option value="21">21</option>
+                                <option value="22">22</option>
+                                <option value="23">23</option>
+                                <option value="24">24</option>
+                                <option value="25">25</option>
+                                <option value="26">26</option>
+                                <option value="27">27</option>
+                                <option value="28">28</option>
+                                <option value="29">29</option>
+                                <option value="30">30</option>
+                                <option value="31">31</option>
+                              </select>
+
+                              <select name="DOBMonth" ng-model="testdate.month" required>
+                                <option value="" disabled selected> - Month - </option>
+                                <option value="01">01</option>
+                                <option value="02">02</option>
+                                <option value="03">03</option>
+                                <option value="04">04</option>
+                                <option value="05">05</option>
+                                <option value="06">06</option>
+                                <option value="07">07</option>
+                                <option value="08">08</option>
+                                <option value="09">09</option>
+                                <option value="10">10</option>
+                                <option value="11">11</option>
+                                <option value="12">12</option>
+                              </select>
+
+
+                              <select name="DOBYear" ng-model="testdate.year" required>
+                                <option value="" disabled selected> - Year - </option>
+                                <option value="2020">2020</option>
+                                <option value="2019">2019</option>
+                                <option value="2018">2018</option>
+                                <option value="2017">2017</option>
+                                <option value="2016">2016</option>
+                                <option value="2015">2015</option>
+                                <option value="2014">2014</option>
+                                <option value="2013">2013</option>
+                                <option value="2012">2012</option>
+                                <option value="2011">2011</option>
+
+                              </select>
+
+
+                              <hr>
+                              <label>SEVERITY</label>
+                              <select class="w3-select w3-border" name="option" ng-model="modalitem.severity" required>
+                                <option value="" disabled selected>SELECT SEVERITY</option>
+                                <option value="1">1</option>
+                                <option value="2">2</option>
+                                <option value="3">3</option>
+                                <option value="4">4</option>
+                              </select>
+                              <br><hr>
+                              <label> CHECK ALL APPRECIATION REASONS:</label>
+
+                              <label> <input type="checkbox" value="QUICK RESPONSE" name="type" ng-model="modalitem.state.quickres" />&nbsp; QUICK RESPONSE</label>&nbsp;
+                              <label><input type="checkbox" value="COMPLEX SOLUTION" name="type" ng-model="modalitem.state.complexsol"/>&nbsp; COMPLEX SOLUTION</label>&nbsp;
+                              <label><input type="checkbox" value="OTHER" name="type" ng-model="modalitem.state.other"/>&nbsp; OTHER</label>
+                              <br>
+                              <hr>
+                              <label>FUNCTIONAL TEAM:</label>
+                              <select name="team" ng-model="modalitem.team" required>
+                                <option value="" disabled selected>select</option>
+                                <option ng-repeat="t in functionalteams" value="{{t.name}}">{{t.name}}</option>
+                              </select>
+                              <hr>
+                              <label>APPRECIATION:</label>
+                              <label><input type="radio" value="internal" name="typo" ng-model="modalitem.type" required/> &nbsp;INTERNAL</label>
+                              <label><input type="radio" value="external" name="typo" ng-model="modalitem.type" required/> &nbsp;EXTERNAL</label>
+                              <br>
+                              <hr>
+                              <div ng-switch="modalitem.type">
+                                <div ng-switch-when="internal">
+                                  <label>APPRECIATION TEXT: </label>
+                                  <br>
+                                  <textarea rows="4" cols="50" required ng-model="modalitem.apprtxt" style="resize:none" maxlength="1000">
+
+                                  </textarea>
+                                  <br>
+                                  <hr>
+
+                                </div>
+                                <div ng-switch-when="external">
+
+                                  <label>APPRECIATION TYPE:</label>
+
+                                  <input type="radio" value="starrate" name="approval" ng-model="modalitem.ratingtype" required/> <label>Star Rating</label>
+                                  <input type="radio" value="appr" name="approval" ng-model="modalitem.ratingtype" required/> <label>WRITTEN APPRECIATION</label>
+                                  <div ng-switch="modalitem.ratingtype">
+
+                                    <div ng-switch-when="appr">
+                                      <label>APPRECIATION TEXT: </label>
+                                      <br>
+                                      <textarea rows="4" cols="50" required ng-model="modalitem.apprtxt"style="resize:none" maxlength="1000">
+
+                                      </textarea>
+                                      <br>
+                                      <hr>
+
+                                    </div>
+                                    <div ng-switch-when="starrate">
+                                      <br>
+                                      <label>Star Rate</label>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                                      <select ng-model="modalitem.stars" style="max-width:60%;" required>
+
+                                      <option value="1" >1</option>
+                                      <option value="2" >2</option>
+                                      <option value="3" >3</option>
+                                      <option value="4" >4</option>
+                                      <option value="5" >5</option>
+                                       </select>
+
+                                       <label>Feedback (optional): </label>
+                                       <br>
+                                       <textarea rows="3" cols="70" ng-model="modalitem.feedback" style="resize:none"  maxlength="1000"></textarea>
+
+                                    </div>
+
+
+
+                                  </div>
+                                </div>
+                                <button class="w3-btn w3-teal" type="submit">SUBMIT</button>
+                              </div>
+
+                              <hr>
+
+                            </form>
+                          </div>
+                          <div class="modal-footer">
+                            <button class="btn" ng-click="closeTicketModalEdit()">Close</button>
+                          </div>
+                        </div>
+
+                        <!-- Modal begin here Ticket edit -->
+
+                    </td>
+
+                    <td at-title="Approval">
+                      <form  ng-submit="setformstatus(item, 'ticket')">
+                        <select ng-model="item.status">
+                          <option value=1>accept</option>
+                          <option value=-1>reject</option>
+                          <option value=0>close</option>
+                        </select>
+                      <!--  <span>accept</span>   <input type="radio" value=1 name="approval" maxlength="100" ng-model="item.status" required/>
+                        <span>reject</span>   <input type="radio" value=-1 name="approval" maxlength="100" ng-model="item.status" required/>
+                        <span>Close</span>   <input type="radio" value=0 name="approval" ng-model="item.status" required/> -->
+                        <div ng-if="item.status" >
+                          <div ng-if="item.status==1">
+                            approval text:<br>
+                            <textarea rows="4" cols="25" ng-model="item.approval_reason" style="resize:none" maxlength="100" required>
+
+                            </textarea>
+
+                          </div>
+                          <div ng-if="item.status==-1">
+                            rejection text:<br>
+                            <textarea rows="4" cols="25" ng-model="item.rejection_reason" style="resize:none" maxlength="100" required>
+
+                            </textarea>
+                          </div>
+                          <br><br>
+                          <div ng-switch="item.status">
+                            <div ng-switch-when=1>
+                              <button type="submit" >submit</button>
+                            </div>
+                            <div ng-switch-when=-1>
+                              <button type="submit" >submit</button>
+                            </div>
+                            <div ng-switch-default>
+                            </div>
+                          </div>
+                        </div></form>
+                      </td>
+
+
+                    </tr>
+                  </tbody>
+                  </table>
+                    <at-pagination at-list="ticket_data.zero" at-config="config"></at-pagination>
+
+                </div>
+
+                <div id="approvalnonticket" class="w3-container city" style="display:none">
+                  <b>PROJECT</b>
+                  <br><br>
+                  <table class="table table-striped table-bordered"  at-paginated at-table at-list="nonticket_data.zero" at-config="config">
+                    <thead style="color:white;background-color:gray"></thead>
+                    <tbody>
+                      <tr>
+
+                          <td at-sortable  at-title="Username" at-implicit at-attribute="username"></td>
+                        <td at-sortable  at-title="Appreciated Username" at-implicit at-attribute="appreciated_username"></td>
+                        <td at-sortable at-title="Client" at-implicit >{{item.client}}</td>
+                      <td at-sortable at-title="Date of Appreciation" at-implicit at-attribute="date"></td>
+                        <td  at-title="Type">
+                          {{item.type}}
+                        </td>
+                        <td  at-title="Written Appreciation">
+                          <textarea rows="2" cols="25" style="resize:none" disabled>{{item.apprtxt}}</textarea>
+                        </td>
+                        <td at-sortable at-title="Appreciated By" at-implicit at-attribute="appreciatedby"></td>
+                        <td  at-title="Functional Team">
+                          {{item.team}}
+                        </td>
+                        <td at-title="Action">
+
+
+                          <div>
+                          <button ng-click="showNonTicketModalEdit(item)"> Edit </button>
+                          <!-- Modal begin here NONTicket edit -->
+                          <div modal="NonTicketModalEdit" close="closeNonTicketModalEdit()">
+                            <div class="modal-header">
+                              <h4>Edit</h4>
+                            </div>
+                            <div class="modal-body">
+                              <form class="w3-container w3-card-4" ng-submit="resubmit_non_ticketform(modalitem, myFile); closeNonTicketModalEdit()">
+                                <hr>
+                                <label>APPRECIATED USER</label>
+                                <br>     <span><b>SELF</b>&nbsp;<input type="radio" value="{{user}}" ng-model="modalitem.appreciated_user" name="modalnonticket_user_ticketbased"/></span>
+                                <span><b>OTHER</b></span>
+                                <input type="text" placeholder="IBM Intranet Email ID" ng-model="modalitem.appreciated_user" required />
+                                <hr>
+
+                                <label>CLIENT</label>
+                                <select class="w3-select w3-border" name="option" required ng-model="modalitem.client">
+                                  <option value="" disabled >-- Select --</option>
+                                  <option ng-repeat="item in clientList" value="{{item}}">{{item}}</option>
+                                </select>
+                                <hr>
+                                <label>APPRECIATED BY:</label>
+                                  <input type="text" ng-model="modalitem.appreciatedby"/>
+                                <hr>
+
+                                <label>DATE OF APPRECIATION</label>
+                                <select name="DOBDay" ng-model="testdate.day" required>
+                                  <option value="" disabled selected> - Day - </option>
+                                  <option value="01">01</option>
+                                  <option value="02">02</option>
+                                  <option value="03">03</option>
+                                  <option value="04">04</option>
+                                  <option value="05">05</option>
+                                  <option value="06">06</option>
+                                  <option value="07">07</option>
+                                  <option value="08">08</option>
+                                  <option value="09">09</option>
+                                  <option value="10">10</option>
+                                  <option value="11">11</option>
+                                  <option value="12">12</option>
+                                  <option value="13">13</option>
+                                  <option value="14">14</option>
+                                  <option value="15">15</option>
+                                  <option value="16">16</option>
+                                  <option value="17">17</option>
+                                  <option value="18">18</option>
+                                  <option value="19">19</option>
+                                  <option value="20">20</option>
+                                  <option value="21">21</option>
+                                  <option value="22">22</option>
+                                  <option value="23">23</option>
+                                  <option value="24">24</option>
+                                  <option value="25">25</option>
+                                  <option value="26">26</option>
+                                  <option value="27">27</option>
+                                  <option value="28">28</option>
+                                  <option value="29">29</option>
+                                  <option value="30">30</option>
+                                  <option value="31">31</option>
+                                </select>
+
+                                <select name="DOBMonth" ng-model="testdate.month" required>
+                                  <option value="" disabled selected> - Month - </option>
+                                  <option value="01">01</option>
+                                  <option value="02">02</option>
+                                  <option value="03">03</option>
+                                  <option value="04">04</option>
+                                  <option value="05">05</option>
+                                  <option value="06">06</option>
+                                  <option value="07">07</option>
+                                  <option value="08">08</option>
+                                  <option value="09">09</option>
+                                  <option value="10">10</option>
+                                  <option value="11">11</option>
+                                  <option value="12">12</option>
+                                </select>
+
+
+                                <select name="DOBYear" ng-model="testdate.year" required>
+                                  <option value="" disabled selected> - Year - </option>
+                                  <option value="2020">2020</option>
+                                  <option value="2019">2019</option>
+                                  <option value="2018">2018</option>
+                                  <option value="2017">2017</option>
+                                  <option value="2016">2016</option>
+                                  <option value="2015">2015</option>
+                                  <option value="2014">2014</option>
+                                  <option value="2013">2013</option>
+                                  <option value="2012">2012</option>
+                                  <option value="2011">2011</option>
+
+                                </select>
+                                <hr>
+                                <label>Functional Team:</label>
+                                <select name="team" ng-model="modalitem.team" required>
+                                  <option value="" disabled selected>select</option>
+                                  <option ng-repeat="t in functionalteams" value="{{t.name}}">{{t.name}}</option>
+                                </select>
+
+                                <hr>
+                                <label>APPRECIATION:</label>
+                                <label><input type="radio" value="internal" name="typo" required ng-model="modalitem.type"/> &nbsp;INTERNAL</label>
+                                <label><input type="radio" value="external" name="typo" required ng-model="modalitem.type"/> &nbsp;EXTERNAL</label>
+                                <hr>
+                                <label>APPRECIATION TEXT:</label>
+                                <br>
+                                <textarea rows="4" cols="50" required ng-model="modalitem.apprtxt" style="resize:none" maxlength="1000">
+
+                                </textarea>
+                        <!--
+                                <div>
+                                  <input  class="w3-btn w3-teal" type="file" file-model="myFile" />
+                                </div> -->
+                                <hr>
+                                <button class="w3-btn w3-teal" type="submit">SUBMIT</button>
+                                <hr>
+
+                              </form>
+
+                            </div>
+                            <div class="modal-footer">
+                              <button class="btn" ng-click="closeNonTicketModalEdit()">Close</button>
+                            </div>
+                          </div>
+                          <!-- Modal begin here NONTicket edit -->
+                          &nbsp;
+                        </div>
+                        </td>
+                        <td at-title="Approval">
+                          <form  ng-submit="setformstatus(item, 'nonticket')">
+                            <select ng-model="item.status">
+                              <option value=1>accept</option>
+                              <option value=-1>reject</option>
+                              <option value=0>close</option>
+                            </select>
+
+<!--
+                            <span>accept</span>   <input type="radio" value=1 name="approval" ng-model="item.status" required/>
+                            <span>reject</span>   <input type="radio" value=-1 name="approval" ng-model="item.status" required/>
+                            <span>Close</span>   <input type="radio" value=0 name="approval" ng-model="item.status" required/> -->
+                            <div ng-if="item.status" >
+                              <div ng-if="item.status==1">
+                                approval text:<br>
+                                <textarea rows="4" cols="25" ng-model="item.approval_reason" style="resize:none" maxlength="100" required>
+                                </textarea>
+                              </div>
+                              <div ng-if="item.status==-1">
+                                rejection text:<br>
+                                <textarea rows="4" cols="25" ng-model="item.rejection_reason" style="resize:none" maxlength="100" required>
+                                </textarea>
+                              </div>
+                              <br>
+                              <div ng-switch="item.status">
+                                <div ng-switch-when=1>
+                                  <button type="submit" >submit</button>
+                                </div>
+                                <div ng-switch-when=-1>
+                                  <button type="submit" >submit</button>
+                                </div>
+                                <div ng-switch-default>
+                                </div>
+                              </div>
+                            </div>
+                          </form>
+                        </td>
+
+                      </tr>
+                    </tbody>
+                  </table>
+                  <at-pagination at-list="nonticket_data.zero" at-config="config"></at-pagination>
+                  </div>
+
+
+
+
+            <!-- other section -->
+
+            <div id="others" class="w3-container city" style="display:none">
+              <form class="w3-container w3-card" ng-submit="post_other()">
+                <br>
+            <div class="left-col">
+                <label>Appreciated User</label>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                  <span>Self&nbsp;<input type="radio" value="{{user}}" ng-model="other.appreciated_user" name="appreciated_user_other"/></span>
+                  <span>Other</span>
+                        <input type="text" placeholder="IBM Intranet Email ID" ng-model="other.appreciated_user" required/>
+            </div>
+                        <label>Appreciated By</label>&nbsp;&nbsp;
+                          <input type="text" required ng-model="other.appreciatedby" placeholder=" Name"/>
+
+            <hr>
+            <div class="left-col">
+              <label>Other</label>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+              <select name="option" onchange='CheckColors(this.value);' required ng-model="other.client">
+               <option value="" disabled selected>select</option>
+               <option value="STAKEHOLDERS" >STAKEHOLDERS</option>
+               <option value="CSM" >CSM</option>
+               <option value="Sales">SALES</option>
+               <option value="UR PROGRAMS">UR PROGRAMS</option>
+               <option value="OTHERS">OTHERS</option>
+
+             </select>
+             </div>
+
+                <label>Functional Team</label>&nbsp;&nbsp;
+               <select name="team" ng-model="other.team" required>
+                 <option value="" disabled selected>select</option>
+                 <option ng-repeat="t in functionalteams" value="{{t.name}}">{{t.name}}</option>
+               </select>
+
+
+            <div name="color" id="color" style='display:none;float:middle;'>
+            <hr><b>Specify other&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+            </b><input type="text" ng-model="other.client" placeholder="  patents etc"/>
+            </div>
+            <hr>
+            <div class="left-col">
+
+            <label>Date of Appreciation</label>&nbsp;&nbsp;&nbsp;
+            <select name="DOBDay" ng-model="dated" required>
+            	<option value="" disabled selected> - Day - </option>
+              <option value="01">01</option>
+              <option value="02">02</option>
+              <option value="03">03</option>
+              <option value="04">04</option>
+              <option value="05">05</option>
+              <option value="06">06</option>
+              <option value="07">07</option>
+              <option value="08">08</option>
+              <option value="09">09</option>
+              <option value="10">10</option>
+              <option value="11">11</option>
+              <option value="12">12</option>
+              <option value="13">13</option>
+              <option value="14">14</option>
+              <option value="15">15</option>
+              <option value="16">16</option>
+              <option value="17">17</option>
+              <option value="18">18</option>
+              <option value="19">19</option>
+              <option value="20">20</option>
+              <option value="21">21</option>
+              <option value="22">22</option>
+              <option value="23">23</option>
+              <option value="24">24</option>
+              <option value="25">25</option>
+              <option value="26">26</option>
+              <option value="27">27</option>
+              <option value="28">28</option>
+              <option value="29">29</option>
+              <option value="30">30</option>
+              <option value="31">31</option>
+            </select>
+
+            <select name="DOBMonth" ng-model="datem" required>
+            	<option value="" disabled selected> - Month - </option>
+              <option value="01">01</option>
+            	<option value="02">02</option>
+            	<option value="03">03</option>
+            	<option value="04">04</option>
+            	<option value="05">05</option>
+            	<option value="06">06</option>
+            	<option value="07">07</option>
+            	<option value="08">08</option>
+            	<option value="09">09</option>
+            	<option value="10">10</option>
+            	<option value="11">11</option>
+            	<option value="12">12</option>
+            </select>
+
+
+            <select name="DOBYear" ng-model="datey" required>
+            	<option value="" disabled selected> - Year - </option>
+            	<option value="2020">2020</option>
+            	<option value="2019">2019</option>
+            	<option value="2018">2018</option>
+            	<option value="2017">2017</option>
+            	<option value="2016">2016</option>
+            	<option value="2015">2015</option>
+            	<option value="2014">2014</option>
+            	<option value="2013">2013</option>
+            	<option value="2012">2012</option>
+            	<option value="2011">2011</option>
+            </select>
+            </div>
+            <label>Appreciation</label>&nbsp;
+            <input type="radio" value="internal" name="typo" required ng-model="other.type"/> &nbsp;Internal
+            <input type="radio" value="external" name="typo" required ng-model="other.type"/> &nbsp;External
+              <hr>
+
+            <label>Appreciation Text </label>
+            <br>
+            <textarea rows="3" cols="50" required ng-model="other.apprtxt" style="resize:none" maxlength="1000" placeholder="Maximum of 1000 words">
+            </textarea>
+            <!--
+            <div>
+              <input class="w3-btn w3-teal" type="file" file-model="myFile" />
+            </div>
+            -->
+            <br><br>
+            <button class="w3-btn w3-teal" type="submit">Submit</button>
+            <br>
+            <br>
+              </form><br>
+              <b>{{messageo}}</b>
+            </div>
+</div>

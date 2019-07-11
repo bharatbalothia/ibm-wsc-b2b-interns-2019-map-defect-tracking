@@ -1,0 +1,967 @@
+<!--{{missingesc}}
+{{missingticket}}
+{{missingnonticket}} -->
+<!--
+<table class="table table-striped" at-table at-paginated at-list="list" at-config="config">
+  <thead></thead>
+  <tbody>
+    <tr>
+      <td at-implicit at-sortable at-attribute="description" width="150" at-initial-sorting="asc"></td>
+      <td at-implicit at-sortable at-attribute="name"  width="250"></td>
+      <td at-implicit at-sortable at-attribute="essential"></td>
+    </tr>
+  </tbody>
+</table>
+-->
+
+<div id="delete">
+  <div modal="DeleteModal" class="modal-height1" close="closeDeleteModal()">
+    <div class="modal-header">
+      <h4>Alert!</h4>
+    </div>
+    <div class="modal-body">
+      <b><font>ARE YOU SURE YOU WANT TO DELETE?</font></b>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-danger" ng-click="delete_form(tempdelete.item, tempdelete.type); closeDeleteModal()">Delete</button>
+      <button  class="btn" ng-click="closeDeleteModal()">Cancel</button>
+    </div>
+  </div>
+</div>
+
+
+
+<div id="userdelegate_modal">
+  <div modal="showuserDelegateModal" class="modal-height2" close="closeuserDelegateModal()">
+    <div class="modal-header">
+      <h4>DELEGATION!</h4>
+    </div>
+    <div class="modal-body">
+      <form ng-submit="delegate_subassign(tempassignee, userDelegate, referDelegate); closeuserDelegateModal()">
+        <h4><b>IBM INTRANET ID <input type="text" placeholder="IBM intranet id" ng-model="tempassignee" required/></b></h4>
+        <div class="multiselect">
+          <div class="selectBox" onclick="showCheckboxes('newmodalcheck')">
+            <b>FUNCTIONAL TEAM</b>
+            <br>
+
+            <div class="overSelect"></div>
+          </div>
+          <div id="newmodalcheck">
+            <div ng-repeat="t in functionalteams_modal">
+              <div ng-show="referDelegate.assigned.indexOf(t.name)!=-1">
+                <label>
+                  <input type="checkbox" value="{{t.name}}" ng-model="t.selected"/>{{t.name}}</label>
+                </div>
+              </div>
+            </div>
+          </div>
+
+
+          <br>
+          <input type="submit" value="Delegate" class="btn btn-primary">
+        </form>
+        <div class="modal-footer">
+          <button class="btn" ng-click="closeuserDelegateModal()">Close</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+
+
+  <div id="delegate_modal">
+    <div modal="showEditDelegateModal" class="modal-height2" close="closeEditDelegateModal()">
+      <div class="modal-header">
+        <h4>Edit!</h4>
+      </div>
+      <div class="modal-body">
+        <form ng-submit="delegate_edit(editDelegate.assignee, editDelegate); closeEditDelegateModal()">
+          <h4><b>IBM INTRANET ID <strong>{{editDelegate.assignee}}</strong></b></h4>
+          <div class="multiselect">
+            <div class="selectBox" onclick="showCheckboxes('modalcheck')">
+              <b>FUNCTIONAL TEAM</b>
+              <br>
+
+              <div class="overSelect"></div>
+            </div>
+            <div id="modalcheck">
+              <div ng-repeat="t in functionalteams_modal">
+                <div ng-show="editDelegate.rootoptions.indexOf(t.name)!=-1">
+                  <label>
+                    <input type="checkbox" value="{{t.name}}" ng-model="t.selected"/>{{t.name}}</label>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+
+            <br>
+            <input type="submit" value="Delegate" class="btn btn-primary">
+          </form>
+          <div class="modal-footer">
+            <button class="btn" ng-click="closeEditDelegateModal()">Close</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+
+    <div id="karthik">
+
+      <div modal="showImportModal" class="modal-height3" close="cancel()">
+        <div class="modal-header">
+          <h4>Report on previous import!</h4>
+        </div>
+        <div class="modal-body">
+          <div>
+            <p>
+              Filename: {{import_filename}}
+              <br />
+              Date Time    : {{import_datetime}}
+            </p>
+            <font><b>    client request and project appreciations: </b></font>
+            <br>accepted : {{tntimports}}
+            <br>  failed :{{failedtntimports}}
+            <br>  duplicates :{{duptntform}}
+          </div>
+          <div>
+            <font><b>escalations :</b></font>
+            <br>accepted : {{escimports}}
+            <br>failed :{{failedescimports}}
+            <br>  duplicates :{{dupescform}}
+          </div>
+
+          <div>
+            <font><b>others :</b></font>
+            <br>accepted : {{otherimports}}
+            <br>failed :{{failedotherimports}}
+            <br>  duplicates :{{dupother}}
+          </div>
+
+          <div>
+            <font><b>parature import :</b></font>
+            <br>accepted : {{parachuteimports}}
+            <br>failed :{{failedparachuteimports}}
+            <br>  duplicates :{{dupparature}}
+          </div>
+
+          <br>see the report section for further details
+
+        </div>
+        <div class="modal-footer">
+          <button class="btn" ng-click="cancel()">Close</button>
+        </div>
+      </div>
+    </div>
+
+    <div id="alert">
+      <div modal="alertModal" class="modal-height1" close="closeAlert()">
+        <div class="modal-header">
+          <h4>Alert!</h4>
+        </div>
+        <div class="modal-body">
+          {{alertMessage}}
+        </div>
+        <div class="modal-footer">
+          <button class="btn" ng-click="closeAlert()">Close</button>
+        </div>
+      </div>
+    </div>
+
+
+
+    <div>
+    <style>
+
+      #nav {
+        width:980px;
+        margin:0 auto;
+        list-style:none;
+        align:middle;
+      }
+      </style>
+
+      <div class="well" style="background-color:#122649;height:70px">
+                <button class="btn btn-default btn-sm" type="submit" ng-click="logout()" style="float:right;"><b> Logout</b></button>
+                <button class="btn btn-default btn-sm" ng-click="gotolead()"style="float:right;"><b>Approver</b></button>
+                <button class="btn btn-default btn-sm" type="submit" ng-click="gotocrmm()" style="float:right;"><b>CRMM</b></button>
+      		<h6 style="float:right;" >
+      		  <font color="white"><b><span class="glyphicon glyphicon-user" ></span>   Welcome  {{loginname}}  &nbsp;</b></font><br>
+          </h6>
+
+          <p style="float:left;">
+          <img src="/user/graphic/123.png"  style="width:100px;height:25px;float:top;">&nbsp;
+          <h4><b><font color="white"> BUSINESS METRICS DASHBOARD</font></b></h4>
+          </p>
+      </div>
+
+    <nav id="nav">
+          <div class="container-fluid">
+            <div class="collapse navbar-collapse" id="myNavbar">
+              <ul class="nav navbar-nav">
+                <button class="dropbtn" onclick="openCity('INPUT')" style="width:150px"><b>EXPORT</b></button>
+
+
+                <div class="dropdown">
+                  <button class="dropbtn" style="width:150px"><b> IMPORT </b></button>
+                  <div class="dropdown-content">
+                    <a href="javascript:void(0)" onclick="openCity('cr')"><b>CLIENT REQUEST</b></a>
+                    <a href="javascript:void(0)" onclick="openCity('pro')"><b>PROJECT</b></a>
+                    <a href="javascript:void(0)" onclick="openCity('Others')"><b>OTHER</b></a>
+                    <a href="javascript:void(0)" onclick="openCity('esco')"><b>ESCALATION</b></a>
+                    <a href="javascript:void(0)" onclick="openCity('para')"><b>PARATURE</b></a>
+
+
+                  </div>
+                </div>
+
+
+                <div class="dropdown">
+                  <button class="dropbtn" style="width:150px"><b> USERS </b></button>
+                  <div class="dropdown-content">
+                    <a href="javascript:void(0)" onclick="openCity('users')"><b>DEACTIVATE</b></a>
+                    <a href="javascript:void(0)" onclick="openCity('delegate')"><b>DELEGATE</b></a>
+                    <a href="javascript:void(0)" onclick="openCity('parature')"><b>PARATURE</b></a>
+                  </div>
+                </div>
+                <div class="dropdown">
+                  <button class="dropbtn"><b> IMPORT REPORT </b></button>
+                  <div class="dropdown-content">
+                    <a href="javascript:void(0)" onclick="openCity('ticketimport')"><b>CLIENT REQUEST</b></a>
+                    <a href="javascript:void(0)" onclick="openCity('nonticketimport')"><b>PROJECT</b></a>
+                    <a href="javascript:void(0)" onclick="openCity('otherimport')"><b>OTHERS</b></a>
+                    <a href="javascript:void(0)" onclick="openCity('escalationimport')"><b>ESCALATION</b></a>
+                    <a href="javascript:void(0)" onclick="openCity('paratureimport')"><b>PARATURE</b></a>
+
+                  </div>
+                </div>
+                <button class="dropbtn" onclick="openCity('ft')"><b>FUNCTIONAL TEAM</b></button>
+
+                <div class="dropdown">
+                  <button class="dropbtn" style="width:150px"><b> MANAGE </b></button>
+                  <div class="dropdown-content">
+                    <a href="javascript:void(0)" onclick="openCity('ticketmanage')"><b>CLIENT REQUEST</b></a>
+                    <a href="javascript:void(0)" onclick="openCity('nonticketmanage')"><b>PROJECT</b></a>
+                    <a href="javascript:void(0)" onclick="openCity('othermanage')"><b>OTHERS</b></a>
+                    <a href="javascript:void(0)" onclick="openCity('escalationmanage')"><b>ESCALATION</b></a>
+                  </div>
+                </div>
+
+
+              </ul>
+              <ul class="nav navbar-nav navbar-right">
+              </ul>
+            </div>
+          </div>
+        </nav>
+
+      <!-- DELEGATE SECTION -->
+      <style>
+      .multiselect {
+        width: 200px;
+      }
+
+      .selectBox {
+        position: relative;
+
+      }
+
+      .selectBox select {
+        width: 100%;
+        font-weight: bold;
+      }
+
+      .overSelect {
+        position: absolute;
+        left: 0;
+        right: 0;
+        top: 0;
+        bottom: 0;
+      }
+
+      #checkboxes {
+        display: none;
+        border: 1px #dadada solid;
+      }
+
+      #checkboxes label {
+        display: block;
+      }
+
+      #checkboxes label:hover {
+        background-color: #1e90ff;
+        }</style>
+
+        <!-- manage section -->
+
+
+        <div id="othermanage" class="w3-container city" style="display:none">
+          <b>OTHERS</b>
+          <br><br>
+          <table class="table table-striped table-bordered"  at-paginated at-table at-list="feedother" at-config="config">
+            <thead style="color:white;background-color:gray"></thead>
+            <tbody>
+            <tr>
+              <td at-sortable  at-title="Appreciated Username" at-implicit at-attribute="appreciated_username"></td>
+              <td at-sortable at-title="Other" at-implicit at-attribute="client"></td>
+              <td at-sortable at-title="Date of Appreciation" at-implicit at-attribute="date"></td>
+              <td at-title="Type">{{item.type}}</td>
+              <td at-title="Written Appreciation"><textarea rows="2" cols="25" style="resize:none" disabled>{{item.apprtxt}}</textarea></td>
+              <td at-sortable at-title="Appreciated By" at-implicit at-attribute="appreciatedby"></td>
+              <td at-title="Functional Team"> {{item.team}} </td>
+              <td at-title="Status">
+                <div>
+                  <div ng-if="item.status==1">accepted</div>
+                  <div ng-if="item.status==-1">rejected</div>
+                  <div ng-if="item.status==0">pending</div>
+                </div>
+              </td>
+              <td at-title="Status message">
+                <div ng-switch="item.status">
+                  <div ng-switch-when="1"><textarea rows="2" cols="25" style="resize:none" disabled>{{item.approval_reason}}</textarea></div>
+                  <div ng-switch-when="-1"><textarea rows="2" cols="25"style="resize:none"  disabled>{{item.rejection_reason}}</textarea></div>
+                </div>
+              </td>
+              <td at-title="Action"><button ng-click="showDeleteModal(item, 'other')" class="btn btn-danger">delete</button ></td>
+              </tr>
+            </tbody>
+            </table>
+            <at-pagination at-list="feedother" at-config="config"></at-pagination>
+          </div>
+
+          <!-- manage ticketbased -->
+
+          <div id="ticketmanage" class="w3-container city" style="display:none">
+            <b>CLIENT-REQUEST</b><br><br>
+
+            <table class="table table-striped table-bordered"  at-paginated at-table at-list="feedticket" at-config="config">
+              <thead style="color:white;background-color:gray"></thead>
+              <tbody>
+              <tr>
+                <td at-sortable  at-title="Appreciated Username" at-implicit at-attribute="appreciated_username"></td>
+                <td at-sortable at-title="Client" at-implicit at-attribute="client"></td>
+                <td at-title="Ticket No">{{item.ticketno}}</td>
+                <td at-sortable at-title="Date of Appreciation" at-implicit at-attribute="date"></td>
+                <td at-title="Severity">{{item.severity}}</td>
+                <td at-title="Appreciation Reason">
+                  <div>
+                    <div ng-if="item.state.quickres == true">quick solution;  </div>
+                    <div ng-if="item.state.complexsol == true">complex solution;</div>
+                    <div ng-if="item.state.other == true">other</div>
+                  </div>
+                </td>
+                <td at-title="Appreciation">{{item.type}}</td><!-- this is for appreciation -->
+                <td at-title="Appreciation Comments">
+                  <div ng-switch="item.type">
+                    <div ng-switch-when="internal"><textarea rows="2" cols="25" style="resize:none" disabled>{{item.apprtxt}}</textarea></div>
+                    <div ng-switch-when="external">
+                      <div ng-switch="item.ratingtype">
+                        <div ng-switch-when="starrate">Star Rating ({{item.stars}} stars)</div>
+                        <div ng-switch-when="appr"><textarea rows="2" cols="25" style="resize:none" disabled>{{item.apprtxt}}</textarea></div>
+                      </div>
+                    </div>
+                  </div>
+                </td>
+                <td at-title="Feedback">
+                  <div ng-switch="item.ratingtype">
+                    <div ng-switch-when="starrate">
+                      <div ng-if="item.feedback">{{item.feedback}}</div>
+                      <div ng-if="!item.feedback">NO FEEDBACK</div>
+                    </div>
+                  </div>
+
+                </td>
+
+                <td at-title="Functional Team"> {{item.team}}</td>
+
+                <td at-title="Status">
+                  <div>
+                    <div ng-if="item.status==1">accepted</div>
+                    <div ng-if="item.status==-1">rejected</div>
+                    <div ng-if="item.status==0">pending</div>
+                  </div>
+                </td>
+                <td at-title="Status Message">
+                  <div ng-switch="item.status">
+                    <div ng-switch-when="1"><textarea rows="2" cols="25" style="resize:none" disabled>{{item.approval_reason}}</textarea></div>
+                    <div ng-switch-when="-1"><textarea rows="2" cols="25" style="resize:none" disabled>{{item.rejection_reason}}</textarea></div>
+                  </div>
+                </td>
+                <td at-title="Action"><button ng-click="showDeleteModal(item, 'ticket')" class="btn btn-danger">delete</button ></td>
+                </tr>
+              </tbody>
+              </table>
+                <at-pagination at-list="feedticket" at-config="config"></at-pagination>
+            </div>
+
+            <!-- manage nonticketbased -->
+
+            <div id="nonticketmanage" class="w3-container city" style="display:none">
+              <b>PROJECT</b><br><br>
+              <!--  {{feednonticket}} -->
+              <table class="table table-striped table-bordered"  at-paginated at-table at-list="feednonticket" at-config="config">
+                <thead style="color:white;background-color:gray"></thead>
+                <tbody>
+                  <tr>
+                    <td at-title="Appreciated Username" at-sortable at-implicit at-attribute="appreciated_username"></td>
+                    <td at-sortable at-title="Client" at-implicit at-attribute="client"></td>
+                    <td at-sortable at-title="Date of Appreciation" at-implicit at-attribute="date"></td>
+                    <td  at-title="Type">
+                      {{item.type}}
+                    </td>
+                    <td  at-title="Written Appreciation">
+                      <textarea rows="2" cols="25" style="resize:none" disabled>{{item.apprtxt}}</textarea>
+                    </td>
+                    <td at-sortable at-title="Appreciated By" at-implicit at-attribute="appreciatedby"></td>
+                    <td  at-title="Functional Team">
+                      {{item.team}}
+                    </td>
+                    <td at-title="Status">
+
+                        <div ng-switch="item.status">
+                          <div ng-switch-when="1">accepted</div>
+                          <div ng-switch-when="-1">rejected</div>
+                          <div ng-switch-when="0">pending</div>
+                        </div>
+
+                    </td>
+                    <td  at-title="Status message">
+
+                        <div ng-switch="item.status">
+                          <div ng-switch-when="1"><textarea rows="2" cols="25" style="resize:none" disabled>{{item.approval_reason}}</textarea></div>
+                          <div ng-switch-when="-1"><textarea rows="2" cols="25"style="resize:none"  disabled>{{item.rejection_reason}}</textarea></div>
+                        </div>
+
+                    </td>
+                    <td at-title="Action">
+                      <button ng-click="showDeleteModal(item, 'nonticket')" class="btn btn-danger">delete</button>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+
+              <at-pagination at-list="feednonticket" at-config="config">
+              </at-pagination>
+
+            </div>
+
+            <!-- manage escalations -->
+
+
+            <div id="escalationmanage" class="w3-container city" style="display:none">
+              <b>ESCALATION</b><br><br>
+
+              <table class="table table-striped table-bordered"  at-paginated at-table at-list="feedescalation" at-config="config">
+                <thead style="color:white;background-color:gray"></thead>
+                <tbody>
+
+                <tr>
+                  <td at-sortable at-title="Username" at-implicit at-attribute="username"></td>
+                  <td at-sortable at-title="Appreciated Username" at-implicit at-attribute="appreciated_username"></td>
+                  <td at-sortable at-title="Client" at-implicit at-attribute="client"></td>
+                  <td at-title="Ticket No"><div ng-if="item.ticketno==''" || ng-if="!item.ticketno"><font><I>no ticket number</I></font></div>
+                    <div ng-if="item.ticketno== null"><font><I>no ticket number</I></font></div>
+                    <div ng-if="item.ticketno">{{item.ticketno}}</div>
+                  </td>
+
+
+                  <td at-sortable at-title="Date of Escalation Report" at-implicit at-attribute="date"></td>
+
+                  <td at-title="Date Resolved"><div ng-switch="item.dateissue">
+                    <div ng-switch-when="--"><I>no entry</I></div>
+                    <div ng-switch-default> {{item.dateissue}}</div>
+                  </div>
+                </td>
+                <td at-title="Escalation Raised by">{{item.raisedby}}</td>
+                <td at-title="IBM Issue">{{item.ibmissue}}</td>
+                <td at-title="Type">{{item.type}}</td>
+                <td at-title="Functional Team">{{item.team}}</td>
+                <td at-title="Description"><textarea rows="2" cols="25" style="resize:none" disabled>{{item.apprtxt}}</textarea></td>
+                <td at-title="Action Taken">
+                  <div ng-if="item.actiontaken"><textarea rows="2" cols="25" style="resize:none" disabled>{{item.actiontaken}}</textarea></div>
+                  <div ng-if="!item.actiontaken"><I>NO ACTION TAKEN</I></div>
+                </td>
+                <td at-title="Action"><button ng-click="showDeleteModal(item, 'escalation')" class="btn btn-danger">delete</button></td>
+              </tr>
+            </tbody>
+            </table>
+            <at-pagination at-list="feedescalation" at-config="config"></at-pagination>
+          </div>
+
+
+
+          <!-- addition of functional teams -->
+          <div id="ft" class="w3-container city" style="display:none">
+            <div class="well" style="width:375px ">
+              <form ng-submit="add_functionalteam(newteam)">
+                <input type="text" placeholder=" FUNCTIONAL TEAM " ng-model="newteam.name" required/>&nbsp;&nbsp;&nbsp;
+                <input type="submit" value="ADD" class="w3-btn w3-teal"/>
+              </form><br>
+              {{fteamsuccess}}
+            </div>
+            <hr>
+            <table style="overflow:visible;" >
+              <tr style="color:white;background-color:gray">
+                <th>FUNCTIONAL TEAM</th>
+                <th>ACTION</th>
+              </tr>
+              <tr ng-repeat="item in functionalteams">
+                <th>{{item.name}}</th>
+                <th><button ng-click="delete_functionalteam(item)" class="btn btn-danger">delete</button></th>
+              </tr>
+            </table>
+          </div>
+
+
+          <!-- parature manage-->
+          <div id="parature" class="w3-container city" style="display:none">
+
+
+          <style>
+          .left-col {
+            float: left;
+            width:30%;
+          }
+          .center-col {
+            float: left;
+            width: 30%;
+          }
+          .right-col {
+            float: left;
+            width: 25%;
+          }
+          </style>
+          <div class="well">
+            <form  ng-submit="post_parature(parature)">
+              <div class="left-col"><label>Parature Name</label>&nbsp;&nbsp;<input type="text" placeholder=" Parature Name" ng-model="parature.par_name" required/></div>&nbsp;&nbsp;&nbsp;&nbsp;
+              <div class="center-col"><label>Ldap Name</label>&nbsp;&nbsp;<input type="text" placeholder=" Ldap Name" ng-model="parature.ldap_name" required/></div>&nbsp;&nbsp;&nbsp;&nbsp;
+              <div class="right-col"><label>IBM Intranet Id</label>&nbsp;&nbsp;<input type="text" placeholder=" IBM Intranet Id" ng-model="parature.intranet_id" required/></div>
+              <button class="w3-btn w3-teal" type="submit">Submit</button>
+            </form>
+            {{message}}
+          </div>
+
+          <br>
+          <table style="overflow:visible;"  >
+            <tr style="color:white;background-color:gray">
+              <th>PARATURE NAME</th>
+              <th>LDAP NAME</th>
+              <th>IBM INTARNET ID</th>
+              <th>ACTION</th>
+
+            </tr>
+            <tr ng-repeat="item in paraturefeed">
+              <th>{{item.par_name}}</th>
+              <th>{{item.ldap_name}}</th>
+              <th>{{item.intranet_id}}</th>
+              <th><button ng-click="deleteparature(item)" class="btn btn-danger">delete</button ></th>
+
+              </tr>
+            </table>
+          </div>
+
+
+          <div id="delegate" class="w3-container city" style="display:none">
+            <div class="well">
+              <br>
+
+              <form ng-submit="delegate_team(assignee, currentSelection)">
+                <b>INPUT USERID</b>&nbsp;
+                <input type="text" placeholder=" Manager IBM Intranet ID" ng-model="assignee"  required/>
+                <br>
+                <br>
+                <div class="multiselect">
+                  <div class="selectBox" onclick="showCheckboxes('normalcheck')">
+                    <b>FUNCTIONAL TEAM<select><option>select</option></select></b>
+                    <br>
+
+                    <div class="overSelect"></div>
+                  </div>
+                  <div id="normalcheck" style="display:none">
+                    <div ng-repeat="t in functionalteams"><input name="{{t.name}}" type="checkbox" value="{{t.name}}" ng-model="t.selected"/>{{t.name}}<br></div>
+                  </div>
+                </div>
+
+
+                <br>
+                <input type="submit" value="ASSIGN" class="btn btn-primary">
+                {{assignment}}
+              </form>
+            </div>
+            <br><br>
+
+
+            <font><b>FUNCTIONAL TEAMS</b></font>
+            <select ng-model="ft">
+              <option value="" disabled selected >select</option>
+              <option value="managers">MANAGERS</option>
+              <option value="users">DELEGATED USERS</option>
+            </select>
+            <div ng-switch="ft">
+
+            <style>
+            table {
+              font-family: arial, sans-serif;
+              font-size: 6;
+              border-collapse: collapse;
+              width: 100%;
+              display: block;
+              overflow-x: scroll;
+            }
+
+            td {
+              font-size: 10pt;
+              border: 1px solid #dddddd;
+              text-align: left;
+              padding: 8px;
+              width:20%;
+
+            }
+            th {
+              font-size: 10pt;
+              border: 1px solid #dddddd;
+              text-align: left;
+              padding: 8px;
+
+
+            }
+            </style>
+            <div ng-switch-when="managers" >
+
+              <table style="overflow:auto">
+                <tr style="background-color:grey">
+                  <th>MANAGER_ID </th>
+                  <th>FUNCTIONAL TEAMS</th>
+                  <th>DELEGATED USERS</th>
+                  <th>ACTION </th>
+                </tr>
+                <tr ng-repeat="item in delegate_managers" >
+
+                  <th width="20%">{{item.assignee}}</th>
+                  <th width="20%"><span ng-repeat="each in item.assigned">{{each}} <br /> </span></th>
+                  <th><span ng-repeat="each in item.delegatedusers">{{each}} <br /> </span></th>
+                  <th><button class="btn btn-primary" ng-click="openEditDelegateModal(item)">EDIT</button>
+                    <button class="btn btn-success" ng-click="openuserDelegateModal(item)">DELEGATE</button>
+                    <button class="btn btn-danger" ng-click="delegate_delete(item)">DELETE</button></th>
+                  </tr>
+                </table>
+
+              </div>
+              <div ng-switch-when="users">
+                <table style="overflow:auto">
+                  <tr style="background-color:grey">
+                    <th>USER_ID </th>
+                    <th>MANAGER  </th>
+                    <th>FUNCTIONAL TEAMS</th>
+                    <th>ACTION </th>
+                  </tr>
+                  <tr ng-repeat="item in delegate_users">
+                    <th>{{item.assignee}}</th>
+                    <th>{{item.manager}}</th>
+                    <th><span ng-repeat="each in item.assigned">{{each}} <br /> </span></th>
+                    <th><button class="btn btn-primary" ng-click="openEditDelegateModal(item)">EDIT</button>
+                      <button class="btn btn-danger" ng-click="delegate_delete(item)">DELETE</button></th>
+                    </tr>
+                  </table>
+                </div>
+              </div>
+
+            </div>
+
+
+
+
+
+            <!-- REPORT SECTION -->
+
+            <div id="paratureimport" class="w3-container city" style="display:none" >
+              <b> PARATURE FIELDS MISSING</b>
+              <br><br>
+              <table style="overflow:visible;">
+                <tr ng-repeat="item in missingparachute">
+                  <th ng-if="item.unavailable.length > 0">
+                    <div ng-if="item.unavailable">
+                      <ul>line={{item.line}}
+                        <li ng-repeat="any in item.unavailable">
+                          {{any}}
+                        </li>
+                      </ul>
+                    </div>
+                  </th>
+                </tr>
+              </table>
+            </div>
+
+
+            <div id="ticketimport" class="w3-container city" style="display:none"  >
+              <b>CLIENT REQUEST</b>
+              <br><br>
+              <font><b>TYPE</b></font>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+              <select ng-model="ma">
+                <option value=""  selected >select</option>
+                <option value="nm">not-mapped</option>
+                <option value="o">fields-missing</option>
+              </select>
+              <br><br>
+              <div ng-switch="ma">
+                <div ng-switch-when="nm">
+                  <table style="overflow:visible;">
+                    <tr ng-repeat="item in invalidticket" &&  ng-if="item.unavailable.length == 0" && ng-if="item.map == false">
+                      <div>
+                        <th>
+                          <div ng-if="item.map == false">client-{{item.form.client}}-not-mapped
+                            <select align="middle" ng-model="item.newclient" required>
+                              <<option value="" disabled selected>Select</option>
+                              <option ng-repeat="any in master" value="{{any}}">{{any}}</option>
+                            </select>
+                            <button ng-click="updateclient(item, 'ticket')">Update</button>
+                            <button ng-click="deleteinvalid(item)">Delete</button>
+                          </div>
+                        </th>
+                      </div>
+                    </tr>
+                  </table>
+                </div>
+
+                <div ng-switch-when="o">
+                  <table style="overflow:visible;">
+                    <tr ng-repeat="item in missingticket">
+
+                      <th ng-if="item.unavailable.length > 0"><div ng-if="item.unavailable">
+                        <ul>line={{item.line}}
+                          <li ng-repeat="any in item.unavailable">
+                            {{any}}
+                          </li>
+                        </ul>
+                      </div></th>
+                    </tr>
+                  </table>
+                </div>
+              </div>
+            </div>
+
+
+            <div id="escalationimport" class="w3-container city" style="display:none" >
+              <b> ESCALATION</b>
+              <br>
+              <!-- escalation import -->
+              <br>
+              <font><b>TYPE</b></font>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+              <select ng-model="ma">
+                <option value=""  selected >select</option>
+                <option value="nm">not-mapped</option>
+                <option value="o">fields-missing</option>
+              </select>
+              <br><br>
+              <div ng-switch="ma">
+                <div ng-switch-when="nm">
+                  <table style="overflow:visible;">
+                    <tr ng-repeat="item in invalidesc" && ng-if="item.unavailable.length == 0"  && ng-if="item.map == false">
+                      <div >
+                        <th>
+                          <div ng-if="item.map == false">client-{{item.form.client}}-not-mapped
+                            <select align="middle" ng-model="item.newclient" required>
+                              <<option value="" disabled selected>Select</option>
+                              <option ng-repeat="any in master" value="{{any}}">{{any}}</option>
+                            </select>
+                            <button ng-click="updateclient(item, 'esc')">Update</button>
+                            <button ng-click="deleteinvalid(item)">Delete</button>
+                          </div>
+                        </th>
+                      </div>
+                    </tr>
+                  </table>
+                </div>
+
+                <div ng-switch-when="o">
+                  <table style="overflow:visible;">
+                    <tr ng-repeat="item in missingesc">
+                      <th ng-if="item.unavailable.length > 0">
+                        <div ng-if="item.unavailable">
+                          <ul>line={{item.line}}
+                            <li ng-repeat="any in item.unavailable">
+                              {{any}}
+                            </li>
+                          </ul>
+                        </div>
+                      </th>
+                    </tr>
+                  </table>
+                </div>
+              </div>
+            </div>
+
+
+
+            <div id="nonticketimport" class="w3-container city" style="display:none" >
+
+              <b> PROJECT</b> <br>
+              <br>
+              <font><b>TYPE</b></font>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+              <select ng-model="ma">
+                <option value=""  selected >select</option>
+                <option value="nm">not-mapped</option>
+                <option value="o">fields-missing</option>
+              </select>
+              <br><br>
+              <div ng-switch="ma">
+                <div ng-switch-when="nm">
+                  <table style="overflow:visible;">
+                    <tr ng-repeat="item in invalidnonticket" && ng-if="item.unavailable.length == 0"  && ng-if="item.map == false">
+
+                      <th>
+                        <div ng-if="item.map == false">client-{{item.form.client}}-not-mapped
+                          <select align="middle" ng-model="item.newclient" required>
+                            <<option value="" disabled selected>Select</option>
+                            <option ng-repeat="any in master" value="{{any}}">{{any}}</option>
+                          </select>
+                          <button ng-click="updateclient(item, 'nonticket')">Update</button>
+                          <button ng-click="deleteinvalid(item)">Delete</button>
+                        </div>
+                      </th>
+
+                    </tr>
+                  </table>
+                </div>
+
+                <div ng-switch-when="o">
+
+                  <table style="overflow:visible;">
+                    <tr ng-repeat="item in missingnonticket">
+                      <th ng-if="item.unavailable.length > 0">
+                        <div ng-if="item.unavailable">
+                          <ul>line={{item.line}}
+                            <li ng-repeat="any in item.unavailable">
+                              {{any}}
+                            </li>
+                          </ul>
+                        </div> </th>
+                      </tr>
+                    </table>
+                  </div>
+                </div>
+              </div>
+
+              <div id="otherimport" class="w3-container city" style="display:none"  >
+                <b>OTHER FIELDS MISSING</b>
+                <br>
+                <br>
+                <table style="overflow:visible;">
+                  <tr ng-repeat="item in missingother">
+                    <th ng-if="item.unavailable.length > 0">
+                      <div ng-if="item.unavailable">
+                        <ul>line={{item.line}}
+                          <li ng-repeat="any in item.unavailable">
+                            {{any}}
+                          </li>
+                        </ul>
+                      </div> </th>
+                    </tr>
+                  </table>
+
+                </div>
+
+
+
+
+                <!-- EXPORT SECTION -->
+                <div id="INPUT" class="w3-container city" style="display:none">
+                  <br>
+                  <br><p>CLIENT REQUEST &nbsp;&nbsp;&nbsp;&nbsp;       <button ng-click="ticket()" class="btn btn-primary">CLIENT REQUEST  &#128206;</button></p>
+                  <br><p>PROJECT      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<button ng-click="nonticket()" class="btn btn-primary">PROJECT  &#128206;</button></p>
+                  <br><p>ESCALATION &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;     <button ng-click="escalation()" class="btn btn-primary">ESCALATION   &#128206;</button></p>
+                  <br><p>OTHERS    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <button ng-click="other()" class="btn btn-primary">OTHERS   &#128206;</button></p>
+                  <br><p>PARATURE  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<button ng-click="paratureexport()" class="btn btn-primary">PARATURE  &#128206;</button></p>
+                </div>
+                <!-- IMPORT SECTION -->
+                <div id="cr" class="w3-container city" style="display:none">
+                  <br>
+                  <h4>CLIENT REQUEST IMPORT </h4>
+                  <form ng-submit="importticketform()">
+                    <input type="file" file-model="myFile" class="btn btn-primary" accept=".xlsx" required />
+                    <br>
+                    <button type="submit" class="btn btn-primary">Import Client Request</button>
+                  </form><br>
+                  <form ng-submit="gettemplate_ticket()">
+                    <input type="submit" value="Get Template" class="btn btn-primary" />
+                  </form>
+                </div>
+                <div id="pro" class="w3-container city" style="display:none">
+                  <h4>PROJECT IMPORT </h4>
+                  <form ng-submit="importnonticketform()">
+                    <input type="file" file-model="myFile" class="btn btn-primary" accept=".xlsx" required />
+                    <br>
+                    <button type="submit" class="btn btn-primary">Import Projects</button>
+                  </form><br>
+                  <form ng-submit="gettemplate_nonticket()">
+                    <input type="submit" value="Get Template" class="btn btn-primary" />
+                  </form>
+                </div>
+                <div id="Others" class="w3-container city" style="display:none">
+                  <h4>OTHERS IMPORT </h4>
+                  <form ng-submit="importother()">
+                    <input type="file" file-model="myFile" class="btn btn-primary" accept=".xlsx" required />
+                    <br>
+                    <button type="submit" class="btn btn-primary">Import Others</button>
+                  </form><br>
+                  <form ng-submit="gettemplate_other()">
+                    <input type="submit" value="Get Template" class="btn btn-primary" />
+                  </form>
+                  <hr>
+                </div>
+                <div id="esco" class="w3-container city" style="display:none">
+                  <h4>ESCALATION IMPORT </h4>
+                  <form ng-submit="importesc()">
+                    <!--<p class="text-info"> ESCALATION IMPORT-->
+                    <input type="file" file-model="myFile" class="btn btn-primary" accept=".xlsx" required />
+                    <br>
+                    <button type="submit" class="btn btn-primary">Import Escalations</button>
+                  </form><br>
+                  <form ng-submit="gettemplate_esc()">
+                    <input type="submit" value="Get Template" class="btn btn-primary" />
+                  </form>
+                </p>
+
+                <hr>
+              </div>
+              <div id="para" class="w3-container city" style="display:none">
+                <h4>PARATURE IMPORT </h4>
+                <form ng-submit="importparachute()">
+                  <input type="file" file-model="myFile" class="btn btn-primary" accept=".xlsx" required />
+                  <br>
+                  <button type="submit" class="btn btn-primary">Import Parature</button>
+                </form><br>
+                <form ng-submit="gettemplate_parachute()">
+                  <input type="submit" value="Get Template" class="btn btn-primary" />
+                </form>
+              </p>
+              <hr>
+            </div>
+
+            <!-- USERS -->
+            <div id="users" class="w3-container city" style="display:none">
+
+              <div >
+                <br><br>
+                <p><b>INPUT USERID</p>
+                  <form ng-submit="forbiduser(fUser)">
+                    <input type="text" ng-model="fUser" placeholder="IBM Intranet ID" required/>
+                    <input type="submit" value="Deactivate" class="btn btn-primary" />
+                  </form>
+                </div>
+                <br><br>
+                <table>
+                  <tr>
+                    <th>USERID</th>
+                    <th>ACTION</th>
+                  </tr>
+                  <tr ng-repeat="item in fusers">
+                    <th>{{item.userid}}</th>
+                    <th><button class="btn btn-primary" ng-click="activateuser(item)">activate</button></th>
+                  </tr>
+                </table>
+                <br><br>
+
+              </div>
+            </div>

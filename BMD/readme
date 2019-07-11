@@ -1,0 +1,25 @@
+step 1)create database collections in couch db using commands
+   curl -X PUT http://127.0.0.1:5984/accountmerge
+   curl -X PUT http://127.0.0.1:5984/escalationform
+   curl -X PUT http://127.0.0.1:5984/forbiddenusers
+   curl -X PUT http://127.0.0.1:5984/formfiles
+   curl -X PUT http://127.0.0.1:5984/invalidforms
+   curl -X PUT http://127.0.0.1:5984/nonticketform
+   curl -X PUT http://127.0.0.1:5984/ticketform
+   curl -X PUT http://127.0.0.1:5984/transactions
+   curl -X PUT http://127.0.0.1:5984/ticketlist
+
+ADD THIS NEW COLLECTION:
+  curl -X PUT http://127.0.0.1:5984/delegates
+  curl -X PUT http://127.0.0.1:5984/other
+  curl -X PUT http://127.0.0.1:5984/paraturenames
+  curl -X PUT http://127.0.0.1:5984/functionalteam
+
+
+
+
+step 2)change the port number in the file server.js line 31
+step 3)change the ldap group names in server/controllers/dashboardcontrollerlogin.js
+step 5)run the application and import the crmm master account names
+step 4)go to folder ticketgen, copy your file in the same folder run this command node main.js <filename>.csv
+step 6)while import  use the new templates which are provided

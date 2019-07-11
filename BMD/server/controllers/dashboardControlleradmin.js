@@ -1,0 +1,774 @@
+var nano = require('nano')('http://admin:admin123@localhost:5984'),
+nonticketform = nano.db.use('nonticketform'),
+ticketform = nano.db.use('ticketform')
+escalationform = nano.db.use('escalationform'),
+other = nano.db.use('other'),
+functionalteam = nano.db.use('functionalteam'),
+invalidforms = nano.db.use('invalidforms'),
+fusers = nano.db.use('forbiddenusers'),
+delegates = nano.db.use('delegates'),
+parature =nano.db.use('paraturenames'),
+url = require('url'),
+fs=require('fs'),
+json2csv = require('json2csv'),
+json2xls = require('json2xls'),
+path = require('path'),
+convertExcel = require('excel-as-json').processFile,
+bluepages = require('bluepages'),
+needusername = require('./needusername'),
+databasejson = require('./databasejson'),
+needusername = require('./needusername'),
+databasejson = require('./databasejson');
+
+function getnow() {
+  var date_info = new Date();
+  var date = date_info.getDate().toString() + '-' + (date_info.getMonth()+1).toString() + '-' + date_info.getFullYear()
+  return date
+}
+
+function ExcelDateToJSDate(serial) {
+  var utc_days  = Math.floor(serial - 25569);
+  var utc_value = utc_days * 86400;
+  var date_info = new Date(utc_value * 1000);
+
+  var date = date_info.getDate().toString() + '-' + (date_info.getMonth()+1).toString() + '-' + date_info.getFullYear()
+  return date
+}
+
+function isValidDate(date)
+{
+  var matches = /^(\d{1,2})[-\/](\d{1,2})[-\/](\d{4})$/.exec(date);
+  if (matches == null) return false;
+  var d = matches[1];
+  var m = matches[2] - 1;
+  var y = matches[3];
+  var composedDate = new Date(y, m, d);
+  return composedDate.getDate() == d &&
+  composedDate.getMonth() == m &&
+  composedDate.getFullYear() == y;
+}
+
+
+module.exports.adminfeed = function(req, res, callback) {
+  ticketform.list({include_docs: true}, function(err, result) {
+    var arr1 = [];
+    for(var i=0;i<result.total_rows;i++) {
+      arr1.push(result.rows[i].doc);
+    }
+    nonticketform.list({include_docs: true}, function(err, result) {
+      var arr2 = [];
+      for(var i=0;i<result.total_rows;i++) {
+        arr2.push(result.rows[i].doc);
+      }
+      escalationform.list({include_docs: true}, function(err, result) {
+        var arr3 = [];
+        for(var i=0;i<result.total_rows;i++) {
+          arr3.push(result.rows[i].doc);
+        }
+        other.list({include_docs:true}, function(err, result) {
+          var arr4 = []
+          if(!result.total_rows)
+          return callback(arr1, arr2, arr3, arr4);
+          for(var i=0;i<result.total_rows;i++) {
+            arr4.push(result.rows[i].doc);
+            if(i==result.total_rows-1)
+            return callback(arr1, arr2, arr3, arr4);
+          }
+        })
+      })
+    })
+  })
+}
+
+module.exports.adminparature = function(req, res, callback){
+  url_parts = url.parse(req.url, true);
+  parature.list({include_docs: true}, function(err, result) {
+    var arr4 = [];
+    if(!result.total_rows)
+    return callback(arr4);
+    else {
+      for(var i=0;i<result.total_rows;i++) {
+        arr4.push(result.rows[i].doc);
+        if(i==result.total_rows-1)
+        return callback(arr4);
+      }
+    }
+  })
+}
+
+
+module.exports.deleteparature = function(req, res){
+
+  var response = req.body;
+  parature.get(req.body._id, function(err, result) {
+    parature.destroy(req.body._id, req.body._rev, function(err, body) {
+      console.log("Deleted");
+      console.log(response);
+      res.send(response);
+    });
+  });
+}
+
+module.exports.addparature = function(req, res){
+  var object = {
+    par_name: req.body.par_name,
+    ldap_name: req.body.ldap_name,
+    intranet_id: req.body.intranet_id,
+
+  }
+  var temp;
+  parature.list({include_docs: true}, function(err, result) {
+    databasejson.parachute(result, object, function(status) {
+      if(!status) {
+        req.body._id = req.body.par_name;
+        parature.insert(req.body, function(err, result) {
+          console.log("result" + result);
+          parature.get(req.body._id, function(err, body) {
+            console.log("body" + body);
+            res.send(body);
+          });
+        });
+      }
+      else {
+        return res.status(400).send({
+          message: 'ENTRY ALREADY EXISTS!'
+        });
+      }
+    })
+  })
+}
+
+module.exports.export_parature = function(req, res) {
+  parature.list({include_docs: true}, function(err, result) {
+    var arr = []
+    if(result.total_rows==0) {
+      xls = json2xls(arr);
+      fs.writeFile(path.resolve(__dirname + '/../../client/exportfile.xlsx'), xls, 'binary', function(err) {
+        if (err) throw err;
+        console.log('file saved');
+        res.end();
+      });
+    }
+    for(var i=0;i<result.total_rows;i++) {
+
+      test = result.rows[i].doc;
+      test["Parature Name"] = test.par_name;
+      test["LDAP Name"] = test.ldap_name;
+      test["IBM Intranet ID"] = test.intranet_id;
+      arr.push(test);
+
+      if(i==result.total_rows-1) {
+        var fields = ['Parature Name', 'LDAP Name', 'IBM Intranet ID'];
+        if(arr[0])
+        var xls = json2xls(arr, {"fields": fields});
+        else
+        var xls = json2xls({}, {});
+        fs.writeFile(path.resolve(__dirname + '/../../client/exportfile.xlsx'), xls, 'binary', function(err) {
+          if (err) throw err;
+          console.log('file saved');
+          res.end();
+        });
+      }
+    }
+  });
+}
+
+
+module.exports.export_other = function(req, res) {
+  other.list({include_docs: true}, function(err, result) {
+    var arr = []
+    if(result.total_rows==0) {
+      xls = json2xls(arr);
+      fs.writeFile(path.resolve(__dirname + '/../../client/exportfile.xlsx'), xls, 'binary', function(err) {
+        if (err) throw err;
+        console.log('file saved');
+        res.end();
+      });
+    }
+    for(var i=0;i<result.total_rows;i++) {
+      if(result.rows[i].doc.status==1) {
+        test = result.rows[i].doc;
+        test.OTHERS = test.client;
+        test.DATE = test.date;
+        test.TYPE = test.type;
+        test.USER = test.user;
+        test.FUNCTIONAL_TEAM = test.team;
+        test.APPRECIATED_BY = test.appreciatedby;
+        test.APPRECIATION_TEXT = test.apprtxt;
+        test.APPROVAL_REASON = test.approval_reason;
+        test.APPRECIATED_USER = test.appreciated_user;
+        arr.push(test);
+      }
+      if(i==result.total_rows-1) {
+        var fields = ['OTHERS', 'USER', 'APPRECIATED_USER','DATE', 'TYPE', 'APPRECIATED_BY', 'FUNCTIONAL_TEAM', 'APPRECIATION_TEXT', 'APPROVAL_REASON'];
+        if(arr[0])
+        var xls = json2xls(arr, {"fields": fields});
+        else
+        var xls = json2xls({}, {});
+        fs.writeFile(path.resolve(__dirname + '/../../client/exportfile.xlsx'), xls, 'binary', function(err) {
+          if (err) throw err;
+          console.log('file saved');
+          res.end();
+        });
+      }
+    }
+  });
+}
+
+
+
+
+
+
+module.exports.export_nonticket = function(req, res) {
+  nonticketform.list({include_docs: true}, function(err, result) {
+    var arr = []
+    if(result.total_rows==0) {
+      xls = json2xls(arr);
+      fs.writeFile(path.resolve(__dirname + '/../../client/exportfile.xlsx'), xls, 'binary', function(err) {
+        if (err) throw err;
+        console.log('file saved');
+        res.end();
+      });
+    }
+    for(var i=0;i<result.total_rows;i++) {
+      if(result.rows[i].doc.status==1) {
+        test = result.rows[i].doc;
+        test.CLIENT = test.client;
+        test.DATE = test.date;
+        test.TYPE = test.type;
+        test.USER = test.user;
+        test.FUNCTIONAL_TEAM = test.team;
+        test.APPRECIATED_BY = test.appreciatedby;
+        test.APPRECIATION_TEXT = test.apprtxt;
+        test.APPROVAL_REASON = test.approval_reason;
+        test.APPRECIATED_USER = test.appreciated_user;
+        arr.push(test);
+      }
+      if(i==result.total_rows-1) {
+        var fields = ['CLIENT', 'USER', 'APPRECIATED_USER','DATE', 'TYPE', 'APPRECIATED_BY', 'FUNCTIONAL_TEAM', 'APPRECIATION_TEXT', 'APPROVAL_REASON'];
+        if(arr[0])
+        var xls = json2xls(arr, {"fields": fields});
+        else
+        var xls = json2xls({}, {});
+        fs.writeFile(path.resolve(__dirname + '/../../client/exportfile.xlsx'), xls, 'binary', function(err) {
+          if (err) throw err;
+          console.log('file saved');
+          res.end();
+        });
+      }
+    }
+  });
+}
+
+
+module.exports.export_ticket = function(req, res) {
+  var test = null;
+  ticketform.list({include_docs: true}, function(err, result) {
+    console.log("export");
+    console.log(result);
+    console.log("export");
+    var arr = []
+    if(result.total_rows==0) {
+      xls = json2xls(arr);
+      fs.writeFile(path.resolve(__dirname + '/../../client/exportfile.xlsx'), xls, 'binary', function(err) {
+        if (err) throw err;
+        console.log('file saved');
+        res.end();
+      });
+    }
+    else {
+      for(var i=0;i<result.total_rows;i++) {
+        if(result.rows[i].doc.status==1) {
+          test = result.rows[i].doc;
+          console.log(test);
+          test.CLIENT = test.client;
+          test.DATE = test.date;
+          test.TYPE = test.type;
+          test.USER = test.user;
+          test.TICKET_NUMBER = test.ticketno;
+          test.SEVERITY = test.severity;
+          test.APPRECIATION_COMMENTS = test.type=='internal'?test.apprtxt:(test.ratingtype=="appr"?test.apprtxt:"5-Star Rating (" + test.stars + ")" );
+          test.FUNCTIONAL_TEAM = test.team;
+          if(test.feedback) test.FEEDBACK = test.feedback;
+          else test.FEEDBACK = "NO FEEDBACK";
+          if(test.state) test.APPRECIATION_REASONS = ((test.state.quickres?"QUICK RESPONSE. ":"") + (test.state.complexsol?"COMPLEX SOLUTION. ":"") + (test.state.other?"OTHER.":""));
+          else test.APPRECIATION_REASONS = "";
+          test.APPROVAL_REASON = test.approval_reason;
+          test.APPRECIATED_USER = test.appreciated_user;
+          test.TICKET_CATEGORY = test.ticketCategory;
+          arr.push(test);
+        }
+        if(i==result.total_rows-1) {
+          console.log(arr);
+          var fields = ['CLIENT', 'USER', 'APPRECIATED_USER','DATE', 'TYPE', 'TICKET_NUMBER', 'TICKET_CATEGORY', 'SEVERITY', 'APPRECIATION_COMMENTS', 'FUNCTIONAL_TEAM','APPRECIATION_REASONS', 'FEEDBACK' ,'APPROVAL_REASON'];
+          if(arr[0])
+          var xls = json2xls(arr, {"fields": fields});
+          else
+          var xls = json2xls({}, {});
+          fs.writeFile(path.resolve(__dirname + '/../../client/exportfile.xlsx'), xls, 'binary', function(err) {
+            if (err) throw err;
+            console.log('file saved');
+            res.end();
+          });
+        }
+      }
+    }
+  });
+}
+
+
+module.exports.export_escalation = function(req, res) {
+  var test = null;
+  escalationform.list({include_docs: true}, function(err, result) {
+    console.log(err);
+    var arr = []
+    if(result.total_rows==0) {
+      xls = json2xls(arr);
+      fs.writeFile(path.resolve(__dirname + '/../../client/exportfile.xlsx'), xls, 'binary', function(err) {
+        if (err) throw err;
+        console.log('file saved');
+        res.end();
+      });
+    }
+    for(var i=0;i<result.total_rows;i++) {
+      test = result.rows[i].doc;
+      test.CLIENT = test.client;
+      if(test.ticketno){
+        test.TICKET_NUMBER = test.ticketno;
+        test.TICKET_CATEGORY = test.ticketCategory;
+      }
+      else {
+        test.TICKET_NUMBER = "NO TICKET NUMBER";
+        test.TICKET_CATEGORY = "NO TICKET CATEGORY";
+
+      }
+      test.DATE_OF_REPORT = test.date;
+      test.DATE_OF_RESOLUTION = test.dateissue;
+      test.ESCALATION_TYPE = test.type;
+      test.USER = test.user;
+      test.ESCALATION_TEXT = test.apprtxt;
+      test.ESCALATION_CATEGORY=test.category;
+      test.REVIEW_MISS=test.reviewmissdesc;
+      test.ACTION_TAKEN = test.actiontaken;
+      test.ESCALATION_RAISED_BY = test.raisedby;
+      test.IBM_ISSUE = test.ibmissue;
+      test.FUNCTIONAL_TEAM = test.team;
+      test.ESCALATED_USER = test.appreciated_user;
+      arr.push(test);
+      if(i==result.total_rows-1) {
+        var fields = ['CLIENT', 'USER', 'ESCALATED_USER', 'TICKET_NUMBER', 'TICKET_CATEGORY', 'DATE_OF_REPORT', 'DATE_OF_RESOLUTION', 'ESCALATION_TYPE', 'ESCALATION_RAISED_BY', 'IBM_ISSUE', 'FUNCTIONAL_TEAM', 'ESCALATION_CATEGORY' , 'REVIEW_MISS' ,'ESCALATION_TEXT' ,'ACTION_TAKEN'];
+        if(arr[0])
+        var xls = json2xls(arr, {"fields": fields});
+        else
+        var xls = json2xls({}, {});
+        fs.writeFile(path.resolve(__dirname + '/../../client/exportfile.xlsx'), xls, 'binary', function(err) {
+          if (err) throw err;
+          console.log('file saved');
+          res.end();
+        });
+      }
+    }
+  });
+}
+
+
+
+module.exports.forbiduser = function(req, res) {
+  fusers.insert(req.body, function(err, result) {
+    fusers.get(result.id, function(err, body) {
+      res.send(body);
+    })
+  })
+}
+
+module.exports.activateuser = function(req, res) {
+  fusers.get(req.body._id, function(err, result) {
+    fusers.destroy(result._id, result._rev, function(err, body) {
+      res.end();
+    })
+  })
+}
+
+module.exports.getfusers = function(req, res) {
+  fusers.list({include_docs: true}, function(err, result) {
+    var arr=[];
+    if(!result.total_rows) res.send([]);
+    for(var i=0;i<result.total_rows;i++) {
+      arr.push(result.rows[i].doc);
+      if(i==result.total_rows-1) res.send(arr);
+    }
+  })
+}
+
+module.exports.updateticket = function(req, res) {
+  req.body.submit_time = getnow();
+  var object = {
+    user: req.body.form.user,
+    appreciated_user: req.body.form.appreciated_user,
+    date: req.body.form.date,
+    client: req.body.form.client,
+    type: req.body.form.type,
+    id: null
+  }
+  ticketform.list({include_docs: true}, function(err, result) {
+    databasejson.data(result, object, function(status) {
+      if(!status) {
+        ticketform.insert(req.body.form, function(err, result) {
+          console.log(result);
+          ticketform.get(result.id, function(err, body) {
+            invalidforms.destroy(req.body._id, req.body._rev, function(err, result) {
+              console.log("destroyed!");
+              res.send(body);
+            })
+          });
+        });
+      }
+      else {
+        return res.status(400).send({
+          message: 'empty'
+        });
+      }
+    })
+  })
+}
+
+module.exports.updatenonticket = function(req, res) {
+  req.body.submit_time = getnow();
+  var object = {
+    user: req.body.form.user,
+    appreciated_user: req.body.form.appreciated_user,
+    date: req.body.form.date,
+    client: req.body.form.client,
+    type: req.body.form.type,
+    id: null
+  }
+  nonticketform.list({include_docs: true}, function(err, result) {
+    databasejson.data(result, object, function(status) {
+      if(!status) {
+        nonticketform.insert(req.body.form, function(err, result) {
+          console.log(result);
+          nonticketform.get(result.id, function(err, body) {
+            invalidforms.destroy(req.body._id, req.body._rev, function(err, result) {
+              console.log("destroyed!");
+              res.send(body);
+            })
+          });
+        });
+      }
+      else {
+        return res.status(400).send({
+          message: 'empty'
+        });
+      }
+    })
+  })
+}
+
+module.exports.updateesc = function(req, res) {
+  req.body.submit_time = getnow();
+  var object = {
+    user: req.body.form.user,
+    appreciated_user: req.body.form.appreciated_user,
+    date: req.body.form.date,
+    client: req.body.form.client,
+    type: req.body.form.type,
+    ticketno: req.body.form.ticketno,
+    id: null
+  }
+  escalationform.list({include_docs: true}, function(err, result) {
+    databasejson.data(result, object, function(status) {
+      if(!status) {
+        escalationform.insert(req.body.form, function(err, result) {
+          console.log(result);
+          escalationform.get(result.id, function(err, body) {
+            invalidforms.destroy(req.body._id, req.body._rev, function(err, result) {
+              console.log("destroyed!");
+              res.send(body);
+            })
+          });
+        });
+      }
+      else {
+        return res.status(400).send({
+          message: 'empty'
+        });
+      }
+    })
+  })
+}
+
+
+module.exports.updateother = function(req, res) {
+  other.insert(req.body.form, function(err, result) {
+    other.get(result.id, function(err, result) {
+      res.send(result);
+      invalidforms.destroy(req.body._id, req.body._rev, function(err, result) {
+        console.log("destroyed!");
+      })
+    })
+  })
+}
+
+module.exports.invalidforms = function(req, res) {
+  var arr1=[], arr2=[], arr3=[], arr4=[], arr5=[];
+  invalidforms.list({include_docs: true}, function(err, result) {
+    console.log(err);
+    if(!result.total_rows) res.send(JSON.stringify([JSON.stringify(arr1), JSON.stringify(arr2), JSON.stringify(arr3), JSON.stringify(arr4), JSON.stringify(arr5)]));
+    else {
+      for(var i=0;i<result.total_rows;i++) {
+        if(result.rows[i].doc.type=='ticket')
+        arr1.push(result.rows[i].doc);
+        else if(result.rows[i].doc.type=='nonticket')
+        arr2.push(result.rows[i].doc);
+        else if(result.rows[i].doc.type=='other')
+        arr3.push(result.rows[i].doc);
+        else if(result.rows[i].doc.type=='escalation')
+        arr4.push(result.rows[i].doc)
+        else
+        arr5.push(result.rows[i].doc)
+        if(i==result.total_rows-1) {
+          res.send(JSON.stringify([JSON.stringify(arr1), JSON.stringify(arr2), JSON.stringify(arr3), JSON.stringify(arr4), JSON.stringify(arr5)]));
+        }
+      }
+    }
+  })
+}
+
+
+module.exports.deleteinvalid = function(req, res) {
+ // console.log("invalid here");
+  var response = req.body;
+  invalidforms.get(req.body._id, function(err, result) {
+  invalidforms.destroy(req.body._id, req.body._rev, function(err, result) {
+    if (err) {
+    console.log(err);
+    }
+    else{
+      console.log("destroyed!");
+    res.send(response);
+  }
+    });
+    });
+
+
+}
+
+module.exports.delegate = function(req, res) {
+  console.log("delegate called")
+  req.body._id = req.body.assignee;
+  bluepages.checkIfUserExists(req.body.assignee, function(err, status) {
+    if(!status) {
+      return res.status(400).send({message: "invalid username"})
+    }
+    else {
+      delegates.insert(req.body, function(err, result) {
+        if(err) {
+          return res.status(400).send({message: "user already delegated! try editing"});
+        }
+        else {
+          delegates.get(result.id, function(err, body) {
+            if(err) {
+              return res.status(400).send({message: "failed to fetch"});
+            }
+            else {
+              return res.send(body);
+            }
+          })
+        }
+      })
+    }
+  })
+}
+
+module.exports.delegate_edit = function(req, res) {
+  console.log("delegate called")
+  bluepages.checkIfUserExists(req.body.assignee, function(err, status) {
+    if(!status) {
+      return res.status(400).send({message: "invalid username"})
+    }
+    else {
+      delegates.get(req.body.assignee, function(err, result) {
+        if(err) {
+          return res.status(400).send({message: "missing data"});
+        }
+        else {
+          result.assigned = req.body.assigned;
+          delegates.insert(result, function(err, body) {
+            if(err) {
+              return res.status(400).send({message: "failed to insert"});
+            }
+            else {
+              delegates.get(body.id, function(err, body) {
+                if(err) {
+                  return res.status(400).send({message: "talk to admin about the issue"});
+                }
+                else {
+                  if(body.status=='manager') {
+                    body.delegatedusers.forEach(function(item) {
+                      delegates.get(item, function(err, result) {
+                        result.rootoptions = body.assigned;
+                        delegates.insert(result, function(err, body) {
+                          if(!err) {
+                            console.log("changed");
+                          }
+                        })
+                      })
+                    })
+                  }
+                  return res.send(body);
+                }
+              })
+            }
+          })
+        }
+      })
+    }
+  })
+}
+
+module.exports.listdelegates = function(req, res) {
+  console.log("hello from me")
+  delegates.list({include_docs: true}, function(err, result) {
+    console.log(err);
+    if(err) {
+      return res.status(400).send({message: "failed to fetch delegates"})
+    }
+    else {
+      if(!result.total_rows) {
+        return res.send([])
+      }
+      else {
+        var arr = []
+        for(var i=0;i<result.total_rows;i++) {
+          arr.push(result.rows[i].doc);
+          if(i==result.total_rows-1)
+          return res.send(arr);
+        }
+      }
+    }
+  })
+}
+
+module.exports.delegate_delete = function(req, res) {
+  delegates.destroy(req.body._id, req.body._rev, function(err, body) {
+    if(err) {
+      console.log(err);
+      return res.end();
+    }
+    else {
+      console.log(body);
+      return res.end();
+    }
+  })
+}
+
+module.exports.delegate_subassign = function(req, res) {
+  delegates.get(req.body.user, function(err, result) {
+    if(err) {
+      return res.status(400).send({message: "failed to fetch"});
+    }
+    else {
+      console.log(result);
+      result.delegatedusers.push(req.body.sub);
+      delegates.insert(result, function(err, result) {
+        if(err) {
+          return res.status(400).send({message: "failed to insert"})
+        }
+        else {
+          delegates.get(result.id, function(err, result) {
+            if(err) {
+              return res.status(400).send({message: "failed to fetch"})
+            }
+            else {
+              return res.send(result);
+            }
+          })
+        }
+      })
+    }
+  })
+}
+
+
+module.exports.delegate_detach = function(req, res) {
+  console.log("detach");
+  console.log(req.body);
+  console.log("detach");
+  delegates.get(req.body.manager, function(err, result) {
+    result.delegatedusers.splice(result.delegatedusers.indexOf(req.body.delegateduser), 1);
+    delegates.insert(result, function(err, result) {
+      delegates.get(result.id, function(err, result) {
+        res.send(result);
+      })
+    })
+  })
+};
+
+module.exports.delete_form = function(req, res) {
+  console.log("Delete called");
+  var db;
+  if(req.body.type=='ticket')
+  db = ticketform;
+  else if(req.body.type=='nonticket')
+  db = nonticketform;
+  else if(req.body.type=='escalation')
+  db = escalationform;
+  else
+  db = other;
+  console.log(req.body);
+  db.destroy(req.body.form._id, req.body.form._rev, function(err, result) {
+    if(err) {
+      console.log(err);
+      res.status(400).send({message: "Couldn't delete"})
+    }
+    else {
+      res.send(req.body)
+    }
+  })
+}
+
+module.exports.add_functionalteam = function(req, res) {
+  req.body.name = req.body.name.toUpperCase()
+  req.body._id = req.body._id.toUpperCase()
+  functionalteam.insert(req.body, function(err, result) {
+    if(err) {
+      return res.status(400).send({message: 'failed to fetch'})
+    }
+    functionalteam.get(result.id, function(err, body) {
+      if(err) {
+        return res.status(400).send({message: 'failed to fetch'})
+      }
+      else {
+        return res.send(body);
+      }
+    })
+  })
+}
+
+module.exports.delete_functionalteam = function(req, res) {
+  functionalteam.destroy(req.body._id, req.body._rev, function(err, result) {
+    if(err) {
+      return res.status(400).send({message: 'failed to delete'})
+    }
+    else {
+      return res.send(req.body);
+    }
+  })
+}
+
+
+module.exports.get_functionalteams = function(req, res) {
+  console.log("get functionalteams");
+  var arr = []
+  functionalteam.list({include_docs: true}, function(err, result) {
+    if(!result.total_rows)
+    return res.send(arr);
+    for(var i=0;i<result.total_rows;i++) {
+      arr.push(result.rows[i].doc);
+      if(i==result.total_rows-1) {
+        res.send(arr);
+      }
+    }
+  })
+}

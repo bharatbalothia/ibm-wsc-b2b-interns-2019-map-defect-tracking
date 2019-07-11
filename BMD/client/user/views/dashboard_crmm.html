@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html>
+<head>
+<style>.indent{ padding-left: 1.8em }</style>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" href="http://www.w3schools.com/lib/w3.css">
+<style>
+
+h1 {
+    text-align: center;
+}
+#nav {
+width:420px;
+margin:0 auto;
+list-style:none;
+align:middle;
+}
+.listWrapper {
+    height:75px;
+     overflow:hidden;
+    overflow-y:scroll;
+
+
+}
+</style>
+<style>
+       table {
+           font-family: arial, sans-serif;
+           border-collapse: collapse;
+           width: 100%;
+            display: block;
+           overflow: scroll;
+
+             }
+
+       td, th {
+           border: 1px solid #dddddd;
+           text-align: left;
+           padding: 8px;
+              }
+
+       tr:nth-child(even) {
+          background-color: #dddddd;
+               }
+               #nav1 {
+                 width:100px;
+                 margin:0 auto;
+                 list-style:none;
+                 align:middle;
+
+               }
+     </style>
+
+</head>
+<body>
+
+    <div class="well" style="background-color:#122649;height:70px">
+              <button class="btn btn-default btn-sm" type="submit" ng-click="logout()" style="float:right;"><b> Logout</b></button>
+                 <a href="#/dashboard_admin"><button class="btn btn-default btn-sm" style="float:right;"><b>Home</b></button></a>
+
+        <p style="float:left;">
+        <img src="/user/graphic/123.png"  style="width:100px;height:25px;float:top;">&nbsp;
+      </p>
+        <h4 id="nav1"><b><font color="white"> CRMM</font></b></h4>
+    </div>
+
+		<nav id="nav">
+  <div class="container-fluid">
+    <div class="collapse navbar-collapse" id="myNavbar">
+      <ul class="nav navbar-nav">
+        <button class="dropbtn" onclick="openCity('London')"><b>HOME</b></button>
+        <button class="dropbtn" onclick="openCity('Paris')"><b>IMPORT</b></button>
+        <button class="dropbtn" onclick="openCity('Tokyo')"><b>EXPORT</b></button>
+        <button class="dropbtn" onclick="openCity('Transaction')"><b>TRANSACTION</b></button>
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        <!--<li><a href="#"><span class="glyphicon glyphicon-user"></span> Sign Up</a></li>
+        <li><a href="#"><span class="glyphicon glyphicon-log-out"></span> Login</a></li>-->
+      </ul>
+    </div>
+  </div>
+</nav>
+
+
+<!-- HOME DIRECTORY -->
+
+<!-- EXPORT  DIRECTORY -->
+  <div id="Tokyo" class="w3-container city" style="display:none">
+    <form ng-submit="exportfile()">
+       <!--<p class="text-info"> EXPORT: </p>-->
+      <input type="submit" value="Export" class="btn btn-primary" ng-click="save_export()"/>
+    </form>
+
+
+</div>
+
+    <!-- IMPORT  DIRECTORY -->
+      <div id="Paris" class="w3-container city" style="display:none">
+
+        <br><br>    <form ng-submit="importcrmm()">
+           <!--<p class="text-info"> IMPORT:-->
+            <input type="file" file-model="myFile" class="btn btn-primary" required />
+      <br>
+            <button type="submit" class="btn btn-primary">Import</button>
+            </form><br>
+            <form ng-submit="gettemplate()">
+            <input type="submit" value="Get Template" class="btn btn-primary" />
+            </form>
+     </div>
+     <!-- TRANSACTIONS-->
+
+       <div id="Transaction" class="w3-container city" style="display:none">
+	    <br><br>
+       <p>
+         <table style="overflow:visible">
+           <tr style="text-align:center;background-color:gray;color:white;" >
+             <th>ACTION BY</th>
+             <th>ACTION TYPE</th>
+             <th>ACTION</th>
+             <th>DESCRIPTION</th>
+           </tr>
+           <tr ng-repeat="item in transaction">
+             <th>{{item.ACTIONBY}}</th>
+             <th>{{item.ACTIONTIME}}</th>
+             <th>{{item.ACTION}}</th>
+             <th>{{item.DESCRIPTION}}</th>
+           </tr>
+         </table>
+
+   </div>
+
+     <!-- END -->
+<br>
+<style>
+  .left-col {
+      float: left;
+      width:30%;
+  }
+  .center-col {
+      float: left;
+      width: 30%;
+  }
+  .right-col {
+      float: left;
+      width: 25%;
+  }
+</style>
+
+<form ng-submit="add_item();export()" >
+
+<div id="London" class="w3-container city">
+
+
+<div class="well">
+<h3 align="middle">MAPPING</h3>
+  <label>Account Name </label>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<input type="text" ng-model="new_item.PACCOUNT" placeholder=" ACCOUNT NAME"  required />
+  <br />
+  <br>
+  <label ><font> <font-color:"white">Master Account Name </font></label>
+  <input type="text" ng-model="searchString" placeholder="{{new_item.ACCOUNT}}"  required />
+<br>
+<br>      <div class="listWrapper">
+       <div ng-repeat="item in master | searchFor: searchString" >
+        <ul>
+          <label><input type="radio" ng-model="new_item.ACCOUNT" name="ACCOUNT" value="{{item}}" />{{item}}</label>
+       </ul>
+     </div>
+        </div>
+  <br>
+<br>  <label>Region:</label>
+
+  <label><input type="radio" ng-model="new_item.REGION" name="REGION" value="APAC" required/>APAC</label>
+  <label><input type="radio" ng-model="new_item.REGION" name="REGION" value="EMEA" required/>EMEA</label>
+  <label><input type="radio" ng-model="new_item.REGION" name="REGION" value="NAM"  required/>NAM</label><br />
+
+<br>
+  <input type="checkbox" ng-model="new_item.validity" name="set_PACCOUNT" value="yes" />Set account name as master account name!<br />
+<br>
+  <input type="submit" value="add item" class="btn btn-success"/>
+
+</div>
+
+<div id="searchBoxes" class="indent">
+  <input type="text" ng-model="globalSearch.ACCOUNT" placeholder="SEARCH BOX" / >
+  <br>
+ <br>
+</div>
+</form>
+
+<table>
+  <tr>
+    <th>ACCOUNT NAME &nbsp;&nbsp;<a href="" ng-click="by_acc_name()">&#8645;</a></th>
+    <th>MASTER ACCOUNT NAME &nbsp;&nbsp;  <a href="" ng-click="by_master()">&#8645;</a> </th>
+    <th>REGION   &nbsp;&nbsp;<a href="" ng-click="by_region()">&#8645;</a></th>
+    <th>ACTION </th>
+  </tr>
+  <tr ng-repeat="item in list | filter :globalSearch">
+    <th>{{item.PACCOUNT}}</th>
+    <th>{{item.ACCOUNT}}</th>
+    <th>{{item.REGION}}</th>
+    <th><input type="button" value="delete" ng-click="delete(item);export()" class="btn btn-danger" /></th>
+  </tr>
+</table>
+</div>
+</body>
+</html>
